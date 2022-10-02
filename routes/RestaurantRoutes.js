@@ -35,6 +35,7 @@ router.post("/", async (req, res) => {
     userName,
     restaurantAddress,
     restaurantZip,
+    ownerId,
   } = req.body;
   if (
     !email ||
@@ -42,6 +43,7 @@ router.post("/", async (req, res) => {
     !restaurantName ||
     !restaurantPhone ||
     !ownerName ||
+    !ownerId ||
     !userName ||
     !restaurantAddress ||
     !restaurantZip

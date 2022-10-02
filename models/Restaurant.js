@@ -11,14 +11,9 @@ const restaurantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    userName: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Owner",
     },
     restaurantName: {
       type: String,

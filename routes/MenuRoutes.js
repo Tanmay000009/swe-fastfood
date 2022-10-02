@@ -1,62 +1,68 @@
 const express = require("express");
-const Menu = require("../models/Menu");
+const MenuItem = require("../models/MenuItem");
 const router = express.Router();
 
-// Get all menus
+// Get all menuItems
 router.get("/", async (req, res) => {
   try {
-    const menus = await Menu.find();
-    res.json(menus);
+    const menuItems = await MenuItem.find();
+    res.json(menuItems);
   } catch (err) {
-    console.log("Error in getting menus", err);
+    console.log("Error in getting menuItems", err);
     res.sendStatus(500);
   }
 });
 
-// Get menu for a specific restaurant
+// Get menuItem for a specific restaurant
 router.get("/:restaurantId", async (req, res) => {
   try {
-    // find many items in the menu collection
-    const menu = await Menu.find({ restaurantId: req.params.restaurantId });
-    res.json(menu);
+    // find many items in the menuItem collection
+    const menuItem = await MenuItem.find({
+      restaurantId: req.params.restaurantId,
+    });
+    res.json(menuItem);
   } catch (err) {
-    console.log("Error in getting menu", err);
+    console.log("Error in getting menuItem", err);
     res.sendStatus(500);
   }
 });
 
-// Create a new menu item
+// Create a new menuItem item
 router.post("/", async (req, res) => {
   try {
-    const menu = new Menu(req.body);
-    await menu.save();
-    res.json(menu);
+    const menuItem = new MenuItem(req.body);
+    await menuItem.save();
+    res.json(menuItem);
   } catch (err) {
-    console.log("Error in creating menu", err);
+    console.log("Error in creating menuItem", err);
     res.sendStatus(500);
   }
 });
 
-// Update a menu item
-router.put("/:menuId", async (req, res) => {
+// Update a menuItem item
+router.put("/:menuItemId", async (req, res) => {
   try {
-    const menu = await Menu.findByIdAndUpdate(req.params.menuId, req.body, {
-      new: true,
-    });
-    res.json(menu);
+    const menuItem = await MenuItem.findByIdAndUpdate(
+      req.params.menuItemId,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    res.json(menuItem);
   } catch (err) {
-    console.log("Error in updating menu", err);
+    console.log("Error in updating menuItem", err);
     res.sendStatus(500);
   }
 });
 
-// Delete a menu item
-router.delete("/:menuId", async (req, res) => {
+// Delete a menuItem item
+router.delete("/:menuItemId", async (req, res) => {
   try {
-    await Menu.findByIdAndDelete(req.params.menuId);
+    await MenuItem.findByIdAndDelete(req.params.menuItemId);
     res.sendStatus(200);
   } catch (err) {
-    console.log("Error in deleting menu", err);
+    console.log("Error in deleting menuItem", err);
     res.sendStatus(500);
   }
 });
