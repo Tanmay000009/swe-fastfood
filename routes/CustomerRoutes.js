@@ -138,8 +138,33 @@ router.put("/", validate, async (req, res) => {
 });
 
 // Delete a customer
-router.delete("/:customerId", async (req, res) => {
+router.delete("/:customerId", validate, async (req, res) => {
+  const { customerId } = req.params;
+
+  if (!customerId) {
+    res.status(400).json({ msg: "Please enter a customer id" });
+    return;
+  }
+
+  const username = req.decodedToken.userName;
+  if (!username) {
+    // unauthorized
+    res.sendStatus(401);
+    return;
+  }
   try {
+    const customer = await Customer.findById(req.params.customerId);
+
+    if (!customer) {
+      res.status(500);
+      return;
+    }
+
+    if (customer.userName != username) {
+      res.status(401).json({ msg: "Unauthorized" });
+      return;
+    }
+
     await Customer.findByIdAndDelete(req.params.customerId);
     res.sendStatus(200);
   } catch (err) {

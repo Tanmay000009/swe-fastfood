@@ -85,9 +85,9 @@ router.post("/", validate, async (req, res) => {
 
 // Update a restaurant
 router.put("/:restaurantId", validate, async (req, res) => {
-  const ownerUserName = req.decodedToken.owner;
+  const ownerUserName = req.decodedToken.userName;
   // verify owner
-  const owner = await owner.findOne({ userName: ownerUserName });
+  const owner = await Owner.findOne({ userName: ownerUserName });
   if (!owner) {
     res.status(400).json({ msg: "User does not exist" });
     return;
@@ -97,14 +97,14 @@ router.put("/:restaurantId", validate, async (req, res) => {
     res.status(404).json({ msg: "Restaurant does not exist" });
     return;
   }
-  if (restaurant.ownerId !== owner._id) {
+  if (restaurant.ownerId == owner._id) {
     res.status(401).json({ msg: "Unauthorized" });
     return;
   }
 
   const { restaurantPhone } = req.body;
 
-  if (restaurantPhone && restaurantPhone.length === 10) {
+  if (restaurantPhone && restaurantPhone.length !== 10) {
     res.status(400).json({ msg: "Phone number must be 10 characters" });
     return;
   }
@@ -125,7 +125,7 @@ router.put("/:restaurantId", validate, async (req, res) => {
 router.delete("/:restaurantId", validate, async (req, res) => {
   const ownerUserName = req.decodedToken.owner;
   // verify owner
-  const owner = await owner.findOne({ userName: ownerUserName });
+  const owner = await Owner.findOne({ userName: ownerUserName });
   if (!owner) {
     res.status(400).json({ msg: "User does not exist" });
     return;
