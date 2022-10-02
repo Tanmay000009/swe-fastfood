@@ -153,7 +153,7 @@ router.post("/login", async (req, res) => {
   try {
     const owner = req.body.email
       ? await Owner.findOne({ email: req.body.email })
-      : req.params.userName
+      : req.body.userName
       ? await Owner.findOne({ userName: req.body.userName })
       : null;
     if (!owner) {

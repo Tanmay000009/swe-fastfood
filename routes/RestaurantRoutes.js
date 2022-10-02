@@ -1,4 +1,5 @@
 const express = require("express");
+const Owner = require("../models/Owner");
 const Restaurant = require("../models/Restaurant");
 const validate = require("../utils/validate");
 const router = express.Router();
@@ -27,9 +28,10 @@ router.get("/:restaurantId", async (req, res) => {
 
 // Create a new restaurant
 router.post("/", validate, async (req, res) => {
-  const ownerUserName = req.decodedToken.owner;
+  const ownerUserName = req.decodedToken.userName;
+  console.log("ownerUserName", req.decodedToken);
   // verify owner
-  const owner = await owner.findOne({ userName: ownerUserName });
+  const owner = await Owner.findOne({ userName: ownerUserName });
 
   if (!owner) {
     res.status(400).json({ msg: "User does not exist" });
@@ -55,6 +57,10 @@ router.post("/", validate, async (req, res) => {
   }
   if (restaurantPhone.length < 10 || restaurantPhone.length > 10) {
     res.status(400).json({ msg: "Phone number must be 10 characters" });
+    return;
+  }
+  if (restaurantZip.length !== 6) {
+    res.status(400).json({ msg: "Zip code must be 6 characters" });
     return;
   }
   // check for existing restaurant
