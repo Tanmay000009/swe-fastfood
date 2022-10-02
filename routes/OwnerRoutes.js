@@ -1,32 +1,32 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const Customer = require("../models/Customer");
+const Owner = require("../models/Owner");
 const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const router = express.Router();
 
-// Get all customers || Get a specific customer
+// Get all owners || Get a specific owner
 router.get("/", async (req, res) => {
   const { email, username: userName } = req.query;
 
   try {
     if (email) {
-      const customer = await Customer.findOne({ email });
-      res.json(customer);
+      const owner = await Owner.findOne({ email });
+      res.json(owner);
     } else if (userName) {
-      const customer = await Customer.findOne({ userName });
-      res.json(customer);
+      const owner = await Owner.findOne({ userName });
+      res.json(owner);
     } else {
-      const customers = await Customer.find();
-      res.json(customers);
+      const owners = await Owner.find();
+      res.json(owners);
     }
   } catch (err) {
-    console.log("Error in getting customers", err);
+    console.log("Error in getting owners", err);
     res.sendStatus(500);
   }
 });
 
-// Create a new customer
+// Create a new owner
 router.post("/", async (req, res) => {
   const { email, password, name, phone, userName } = req.body;
   if (!email || !password || !name || !phone || !userName) {
@@ -46,12 +46,12 @@ router.post("/", async (req, res) => {
     return;
   }
   // check for existing user
-  const existingCustomer = await Customer.findOne({ email });
-  if (existingCustomer) {
+  const existingOwner = await Owner.findOne({ email });
+  if (existingOwner) {
     res.status(400).json({ msg: "User already exists" });
     return;
   }
-  const existingUser = await Customer.findOne({ userName });
+  const existingUser = await Owner.findOne({ userName });
   if (existingUser) {
     res.status(400).json({ msg: "Username already exists" });
     return;
@@ -61,16 +61,16 @@ router.post("/", async (req, res) => {
   const hash = await bcrypt.hash(password, salt);
   req.body.password = hash;
   try {
-    const customer = new Customer(req.body);
-    await customer.save();
-    res.status(200).json({ msg: "Customer created successfully" });
+    const owner = new Owner(req.body);
+    await owner.save();
+    res.status(200).json({ msg: "Owner created successfully" });
   } catch (err) {
-    console.log("Error in creating customer", err);
+    console.log("Error in creating owner", err);
     res.sendStatus(500);
   }
 });
 
-// Update a customer
+// Update a owner
 router.put("/", validate, async (req, res) => {
   const { email, password, name, phone, userName } = req.body;
 
@@ -83,8 +83,8 @@ router.put("/", validate, async (req, res) => {
   }
 
   if (email) {
-    const existingCustomer = await Customer.findOne({ email });
-    if (existingCustomer) {
+    const existingOwner = await Owner.findOne({ email });
+    if (existingOwner) {
       res.status(400).json({ msg: `User with email: ${email} already exists` });
       return;
     }
@@ -94,7 +94,7 @@ router.put("/", validate, async (req, res) => {
       res.status(400).json({ msg: "Username must be at least 6 characters" });
       return;
     }
-    const existingUser = await Customer.findOne({ userName });
+    const existingUser = await Owner.findOne({ userName });
     if (existingUser) {
       res.status(400).json({ msg: `Username: ${userName} already exists` });
       return;
@@ -119,55 +119,55 @@ router.put("/", validate, async (req, res) => {
   }
 
   try {
-    const customer = await Customer.findOneAndUpdate(
+    const owner = await Owner.findOneAndUpdate(
       { userName: username },
       req.body,
       {
         new: true,
       }
     );
-    if (!customer) {
+    if (!owner) {
       res.status(500);
       return;
     }
-    res.status(200).json({ msg: "Customer details updated successfully" });
+    res.status(200).json({ msg: "Owner details updated successfully" });
   } catch (err) {
-    console.log("Error in updating customer", err);
+    console.log("Error in updating owner", err);
     res.sendStatus(500);
   }
 });
 
-// Delete a customer
-router.delete("/:customerId", async (req, res) => {
+// Delete a owner
+router.delete("/:ownerId", async (req, res) => {
   try {
-    await Customer.findByIdAndDelete(req.params.customerId);
+    await Owner.findByIdAndDelete(req.params.ownerId);
     res.sendStatus(200);
   } catch (err) {
-    console.log("Error in deleting customer", err);
+    console.log("Error in deleting owner", err);
     res.sendStatus(500);
   }
 });
 
-// Login a customer
+// Login a owner
 router.post("/login", async (req, res) => {
   try {
-    const customer = req.body.email
-      ? await Customer.findOne({ email: req.body.email })
+    const owner = req.body.email
+      ? await Owner.findOne({ email: req.body.email })
       : req.params.userName
-      ? await Customer.findOne({ userName: req.body.userName })
+      ? await Owner.findOne({ userName: req.body.userName })
       : null;
-    if (!customer) {
+    if (!owner) {
       res.sendStatus(404);
     } else {
-      bcrypt.compare(req.body.password, customer.password, (err, result) => {
+      bcrypt.compare(req.body.password, owner.password, (err, result) => {
         if (err) {
           console.log(err);
           res.sendStatus(500);
         } else if (result) {
           console.log(result);
-          req.session.customer = customer;
+          req.session.owner = owner;
           const info = {
-            userName: customer.userName,
+            userName: owner.userName,
           };
           const token = getToken(info, "2h");
           res.status(200).json({ token, msg: "Login successful" });

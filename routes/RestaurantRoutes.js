@@ -1,5 +1,6 @@
 const express = require("express");
 const Restaurant = require("../models/Restaurant");
+const validate = require("../utils/validate");
 const router = express.Router();
 
 // Get all restaurants
@@ -25,32 +26,47 @@ router.get("/:restaurantId", async (req, res) => {
 });
 
 // Create a new restaurant
-router.post("/", async (req, res) => {
+router.post("/", validate, async (req, res) => {
+  const ownerUserName = req.decodedToken.owner;
+  // verify owner
+  const owner = await owner.findOne({ userName: ownerUserName });
+
+  if (!owner) {
+    res.status(400).json({ msg: "User does not exist" });
+    return;
+  }
+
   const {
     email,
-    password,
     restaurantName,
     restaurantPhone,
-    ownerName,
-    userName,
     restaurantAddress,
     restaurantZip,
-    ownerId,
   } = req.body;
   if (
     !email ||
-    !password ||
     !restaurantName ||
     !restaurantPhone ||
-    !ownerName ||
-    !ownerId ||
-    !userName ||
     !restaurantAddress ||
     !restaurantZip
   ) {
     res.status(400).json({ msg: "Please enter all fields" });
     return;
   }
+  if (restaurantPhone.length < 10 || restaurantPhone.length > 10) {
+    res.status(400).json({ msg: "Phone number must be 10 characters" });
+    return;
+  }
+  // check for existing restaurant
+  const existingRestaurant = await Restaurant.findOne({ email });
+  if (existingRestaurant) {
+    res.status(400).json({ msg: "Restaurant already exists" });
+    return;
+  }
+
+  req.body.ownerId = owner._id;
+  req.body.ownerName = owner.name;
+
   try {
     const restaurant = new Restaurant(req.body);
     await restaurant.save();
@@ -62,7 +78,30 @@ router.post("/", async (req, res) => {
 });
 
 // Update a restaurant
-router.put("/:restaurantId", async (req, res) => {
+router.put("/:restaurantId", validate, async (req, res) => {
+  const ownerUserName = req.decodedToken.owner;
+  // verify owner
+  const owner = await owner.findOne({ userName: ownerUserName });
+  if (!owner) {
+    res.status(400).json({ msg: "User does not exist" });
+    return;
+  }
+  const restaurant = await Restaurant.findById(req.params.restaurantId);
+  if (!restaurant) {
+    res.status(404).json({ msg: "Restaurant does not exist" });
+    return;
+  }
+  if (restaurant.ownerId !== owner._id) {
+    res.status(401).json({ msg: "Unauthorized" });
+    return;
+  }
+
+  const { restaurantPhone } = req.body;
+
+  if (restaurantPhone && restaurantPhone.length === 10) {
+    res.status(400).json({ msg: "Phone number must be 10 characters" });
+    return;
+  }
   try {
     const restaurant = await Restaurant.findByIdAndUpdate(
       req.params.restaurantId,
@@ -77,7 +116,24 @@ router.put("/:restaurantId", async (req, res) => {
 });
 
 // Delete a restaurant
-router.delete("/:restaurantId", async (req, res) => {
+router.delete("/:restaurantId", validate, async (req, res) => {
+  const ownerUserName = req.decodedToken.owner;
+  // verify owner
+  const owner = await owner.findOne({ userName: ownerUserName });
+  if (!owner) {
+    res.status(400).json({ msg: "User does not exist" });
+    return;
+  }
+  const restaurant = await Restaurant.findById(req.params.restaurantId);
+  if (!restaurant) {
+    res.status(404).json({ msg: "Restaurant does not exist" });
+    return;
+  }
+  if (restaurant.ownerId !== owner._id) {
+    res.status(401).json({ msg: "Unauthorized" });
+    return;
+  }
+
   try {
     await Restaurant.findByIdAndDelete(req.params.restaurantId);
     res.sendStatus(200);
