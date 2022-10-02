@@ -1,0 +1,30 @@
+const express = require("express");
+const connectDB = require("./utils/connectDB");
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const cors = require("cors");
+
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+connectDB();
+
+app.use(
+  session({
+    secret: "secret key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use("/restaurant", require("./routes/RestaurantRoutes"));
+app.use("/menu", require("./routes/MenuRoutes"));
+app.use("/customer", require("./routes/CustomerRoutes"));
+
+app.get("/", (req, res) => {
+  res.send("Hi");
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server started");
+});
