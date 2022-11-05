@@ -21,6 +21,7 @@ app.use("/restaurant", require("./routes/RestaurantRoutes"));
 app.use("/menu", require("./routes/MenuRoutes"));
 app.use("/customer", require("./routes/CustomerRoutes"));
 app.use("/owner", require("./routes/OwnerRoutes"));
+app.use("/order", require("./routes/OrderRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hi");
