@@ -22,15 +22,6 @@ router.get("/signup", (req, res) => {
   }
 });
 
-router.get("/update-menu", (req, res) => {
-  const { ownerId } = req.body;
-  if (req.session.owner) {
-    res.render("owner_update_menu.ejs", { msg: "", ownerId });
-  } else {
-    res.render("login.ejs", { user: "Owner", msg: "" });
-  }
-});
-
 router.get("/new/restaurant", (req, res) => {
   const token = req.headers.authorization;
   console.log(token);

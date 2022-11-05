@@ -59,24 +59,22 @@
                    
                 </table>
                 <div class="row" style="padding-top: 40px;">
-                    <a style="text-decoration: none; color:#B61010;" href="admin_completed_orders.html">
+                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/completed-orders/?ownerId=' + owner._id %>">
                         <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
                             Completed Orders
                         </div>
                     </a>
                     <div class="col">&nbsp;</div>
-                    <a style="text-decoration: none; color: white;" href="admin_current_orders.html">
+                    <a style="text-decoration: none; color: white;" href="<%- '/restaurant/current-orders/?ownerId=' + owner._id %>">
                         <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010;">
                             Current Orders
                         </div>
                     </a>
                     <div class="col">&nbsp;</div>
-                    <form method="get" action="/owner/update-menu" >
-                        <input name="ownerId" type="hidden" value="<%= owner._id %>">
-                        <button style="text-decoration: none; color: white; background-color: #B61010; padding: 10px 20px; border: none; box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
+                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/update-menu/?ownerId=' + owner._id %>">
+                        <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
                             Update Menu
-                        </button>
-                        </form>
+                        </div>
                     </span>
                 </div>
         </section>

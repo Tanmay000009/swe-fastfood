@@ -4,6 +4,33 @@ const Restaurant = require("../models/Restaurant");
 const validate = require("../utils/validate");
 const router = express.Router();
 
+router.get("/update-menu", (req, res) => {
+  const { ownerId } = req.params;
+  if (req.session.owner) {
+    res.render("owner_update_menu.ejs", { msg: "", ownerId });
+  } else {
+    res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
+  }
+});
+
+router.get("/current-orders", (req, res) => {
+  const { ownerId } = req.params;
+  if (req.session.owner) {
+    res.render("owner_current_orders.ejs", { msg: "", ownerId });
+  } else {
+    res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
+  }
+});
+
+router.get("/completed-orders", (req, res) => {
+  const { ownerId } = req.params;
+  if (req.session.owner) {
+    res.render("owner_completed_orders.ejs", { msg: "", ownerId });
+  } else {
+    res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
+  }
+});
+
 // Get all restaurants
 router.get("/", async (req, res) => {
   try {
