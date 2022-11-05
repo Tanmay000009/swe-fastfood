@@ -184,26 +184,29 @@ router.delete("/:customerId", validate, async (req, res) => {
 // Login a customer
 router.post("/login", async (req, res) => {
   try {
-    const customer = req.body.email
-      ? await Customer.findOne({ email: req.body.email })
-      : req.body.userName
-      ? await Customer.findOne({ userName: req.body.userName })
-      : null;
+    const customer = await Customer.findOne({ userName: req.body.userName });
+
     if (!customer) {
-      res.sendStatus(404);
+      return res.render("login.ejs", {
+        user: "User",
+        msg: "Incorrect Username/Password",
+      });
     } else {
       bcrypt.compare(req.body.password, customer.password, (err, result) => {
         if (err) {
           console.log(err);
-          res.sendStatus(500);
+          return res.render("login.ejs", {
+            user: "User",
+            msg: "Incorrect Username/Password",
+          });
         } else if (result) {
           console.log(result);
-          req.session.customer = customer;
           const info = {
             userName: customer.userName,
           };
           const token = getToken(info, "2h");
-          res.status(200).json({ token, msg: "Login successful" });
+          req.session.token = token;
+          res.render("customer_home.ejs", { customer, token });
         } else {
           res.status(401).json({ msg: "Incorrect Username or Password" });
           return;
@@ -214,6 +217,12 @@ router.post("/login", async (req, res) => {
     console.log("Error in logging in customer", err);
     res.sendStatus(500);
   }
+});
+
+// Logout a owner
+router.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
 });
 
 module.exports = router;
