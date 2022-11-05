@@ -25,6 +25,11 @@
   </head>
 
   <body>
+    <% if (msg) { %>
+    <script>
+      alert("<%= msg %>");
+    </script>
+    <% } %>
     <div class="mycontainer">
       <section id="mysection">
         <section id="section0">
@@ -48,17 +53,17 @@
                   <div id="test1" class="col s12">
                     <div>&nbsp;</div>
                     <div class="row">
-                      <form class="col s12" method="POST" action="">
+                      <form class="col s12" method="POST" action="/owner/login">
                         <div class="row">
                           <div class="input-field col s6 offset-s3">
                             <input
                               id="uname"
                               type="text"
                               class="validate"
-                              name="uname"
+                              name="userName"
                               required
                             />
-                            <label for="uname">Username</label>
+                            <label for="userName">Username</label>
                           </div>
                         </div>
                         <div class="row">
@@ -67,19 +72,17 @@
                               id="pwd"
                               type="password"
                               class="validate"
-                              name="pwd"
+                              name="password"
                               required
                             />
-                            <label for="pwd">Password</label>
+                            <label for="password">Password</label>
                           </div>
                         </div>
                         <button
                           type="submit"
                           class="waves-effejct waves-light btn btncolor center studentlogin"
                         >
-                          <a href="admin_home.html" style="color: white"
-                            >LOGIN</a
-                          >
+                          LOGIN
                         </button>
                       </form>
                     </div>
@@ -102,12 +105,7 @@
       $(".mycontainer").delay(2000).fadeIn("slow");
 
       var sect1 = document.querySelector("#section1");
-      $(document).ready(function () {
-        $(".studentlogin").click(function () {
-          // $('#section1').css("transform","translate(-1600px,0)");
-          $("#mysection").css("transform", "translate(0,-675px)");
-        });
-      });
+      $(document).ready(function () {});
 
       $(document).ready(function () {
         $(".tabs").tabs();
