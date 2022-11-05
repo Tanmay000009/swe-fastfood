@@ -21,6 +21,11 @@ const menuItemSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    available: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     restaurantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Restaurant",
