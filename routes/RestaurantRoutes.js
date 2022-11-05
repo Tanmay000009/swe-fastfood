@@ -4,19 +4,25 @@ const Restaurant = require("../models/Restaurant");
 const validate = require("../utils/validate");
 const router = express.Router();
 
-router.get("/update-menu", (req, res) => {
+router.get("/update-menu", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   if (req.session.owner) {
-    res.render("owner_update_menu.ejs", { msg: "", userName });
+    req.session.token = req.session.token;
+    res.render("owner_update_menu.ejs", { msg: "", owner, restaurant });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
 });
 
-router.get("/current-orders", validate, (req, res) => {
+router.get("/current-orders", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   if (req.session.owner) {
-    res.render("owner_current_orders.ejs", { msg: "", userName });
+    req.session.token = req.session.token;
+    res.render("owner_current_orders.ejs", { msg: "", owner, restaurant });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
@@ -24,20 +30,22 @@ router.get("/current-orders", validate, (req, res) => {
 
 router.get("/completed-orders", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
-  console.log(req.params);
   const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   if (req.session.owner) {
-    res.render("owner_completed_orders.ejs", { msg: "", owner });
+    req.session.token = req.session.token;
+    res.render("owner_completed_orders.ejs", { msg: "", owner, restaurant });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
 });
 
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
-  const owner = await findOne({ userName: userName });
+  const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   if (req.session.owner) {
+    req.session.token = req.session.token;
     res.render("owner_home.ejs", { msg: "", restaurant, owner });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });

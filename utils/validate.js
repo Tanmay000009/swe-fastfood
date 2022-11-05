@@ -8,9 +8,7 @@ function validate(req, res, next) {
     token = req.session.token;
   }
   if (!token) {
-    return res.status(401).json({
-      error: "No token provided",
-    });
+    res.render("index.ejs", { msg: "Login expired!" });
   }
   verify(token, JWT_SECRET, (err, decodedToken) => {
     if (err) {

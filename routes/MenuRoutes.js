@@ -2,6 +2,11 @@ const express = require("express");
 const MenuItem = require("../models/MenuItem");
 const router = express.Router();
 
+router.get("/add-new-item", (req, res) => {
+  req.session.token = req.session.token;
+  res.render("add_menu_item.ejs", { msg: "" });
+});
+
 // Get all menuItems
 router.get("/", async (req, res) => {
   try {
