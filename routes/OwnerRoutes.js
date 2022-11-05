@@ -13,6 +13,14 @@ router.get("/login", (req, res) => {
   }
 });
 
+router.get("/signup", (req, res) => {
+  if (req.session.user) {
+    res.redirect("/owner");
+  } else {
+    res.render("signup.ejs", { user: "Owner", msg: "" });
+  }
+});
+
 // Get all owners || Get a specific owner
 router.get("/", async (req, res) => {
   const { email, username: userName } = req.query;

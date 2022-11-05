@@ -13,6 +13,14 @@ router.get("/login", (req, res) => {
   }
 });
 
+router.get("/signup", (req, res) => {
+  if (req.session.user) {
+    res.redirect("/customer");
+  } else {
+    res.render("signup.ejs", { user: "Customer", msg: "" });
+  }
+});
+
 // Get all customers || Get a specific customer
 router.get("/", async (req, res) => {
   const { email, username: userName } = req.query;
