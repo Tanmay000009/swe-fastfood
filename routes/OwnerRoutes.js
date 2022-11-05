@@ -5,6 +5,10 @@ const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const router = express.Router();
 
+router.get("/login", (req, res) => {
+  res.render("owner.ejs");
+});
+
 // Get all owners || Get a specific owner
 router.get("/", async (req, res) => {
   const { email, username: userName } = req.query;

@@ -5,6 +5,10 @@ const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const router = express.Router();
 
+router.get("/login", (req, res) => {
+  res.render("customer.ejs");
+});
+
 // Get all customers || Get a specific customer
 router.get("/", async (req, res) => {
   const { email, username: userName } = req.query;
