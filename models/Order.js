@@ -27,7 +27,7 @@ const orderSchema = new mongoose.Schema({
   orderStatus: {
     type: String,
     required: true,
-    default: "Awaiting Confirmation",
+    default: "Pending",
   },
   orderTotal: {
     type: Number,

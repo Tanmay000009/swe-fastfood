@@ -8,8 +8,6 @@ const router = express.Router();
 
 // Get all orders
 router.get("/", async (req, res) => {
-  const { email, userName } = req.query;
-
   try {
     const orders = await Order.find();
     res.json(orders);
@@ -101,13 +99,13 @@ router.get("/restaurant", validate, async (req, res) => {
 
 // Create a new order
 router.post("/", validate, async (req, res) => {
-  const { orderItems, restaurantId, userId, orderStatus, orderTotal } =
+  const { orderItems, restaurantId, customerId, orderStatus, orderTotal } =
     req.body;
   const userName = req.decodedToken.userName;
   if (
     !orderItems ||
     !restaurantId ||
-    !userId ||
+    !customerId ||
     !orderStatus ||
     !orderTotal ||
     !userName
@@ -123,7 +121,7 @@ router.post("/", validate, async (req, res) => {
       return;
     }
     // verify that the user exists
-    const user = await Customer.findById(userId);
+    const user = await Customer.findById(customerId);
     if (!user) {
       res.status(400).json({ msg: "Customer does not exist" });
       return;
@@ -248,7 +246,7 @@ router.put("/:id", validate, async (req, res) => {
       return;
     }
     // if the user is a restaurant, they can only cancel orders that are pending
-    if (restaurant && order.orderStatus !== "pending") {
+    if (restaurant && order.orderStatus !== "Pending") {
       res
         .status(400)
         .json({ msg: "Order cannot be cancelled after accepting" });
@@ -263,6 +261,49 @@ router.put("/:id", validate, async (req, res) => {
       return;
     }
 
+    order.orderStatus = orderStatus;
+    await order.save();
+    res.json(order);
+  } catch (err) {
+    console.log("Error in updating order", err);
+    res.sendStatus(500);
+  }
+});
+
+// complete a specific order
+router.put("/:id", validate, async (req, res) => {
+  const { id } = req.params;
+  const { orderStatus } = req.body;
+  const userName = req.decodedToken.userName;
+
+  if (!orderStatus || userName) {
+    res.status(400).json({ msg: "Please enter all fields" });
+    return;
+  }
+
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      res.status(400).json({ msg: "Order does not exist" });
+      return;
+    }
+    const restaurant = await Restaurant.findById(order.userId);
+    if (!restaurant) {
+      res.status(400).json({ msg: "Restaurant does not exist" });
+      return;
+    }
+    if (restaurant.userName !== userName) {
+      res.status(400).json({ msg: "Restaurant does not match" });
+      return;
+    }
+    if (order.orderStatus === "Completed") {
+      res.status(400).json({ msg: "Order is already completed" });
+      return;
+    }
+    if (order.orderStatus === "Cancelled") {
+      res.status(400).json({ msg: "Order is already cancelled" });
+      return;
+    }
     order.orderStatus = orderStatus;
     await order.save();
     res.json(order);
