@@ -1,10 +1,16 @@
 const express = require("express");
 const MenuItem = require("../models/MenuItem");
+const Owner = require("../models/Owner");
+const Restaurant = require("../models/Restaurant");
+const validate = require("../utils/validate");
 const router = express.Router();
 
-router.get("/add-new-item", (req, res) => {
+router.get("/add-new-item", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   req.session.token = req.session.token;
-  res.render("add_menu_item.ejs", { msg: "" });
+  res.render("add_menu_item.ejs", { msg: "", restaurant, owner });
 });
 
 // Get all menuItems
@@ -33,11 +39,20 @@ router.get("/:restaurantId", async (req, res) => {
 });
 
 // Create a new menuItem item
-router.post("/", async (req, res) => {
+router.post("/", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  req.body.restaurantId = restaurant._id;
+  console.log(req.body);
   try {
     const menuItem = new MenuItem(req.body);
     await menuItem.save();
-    res.json(menuItem);
+    res.render("owner_update_menu.ejs", {
+      msg: "Menu Item added successfully!",
+      restaurant,
+      owner,
+    });
   } catch (err) {
     console.log("Error in creating menuItem", err);
     res.sendStatus(500);

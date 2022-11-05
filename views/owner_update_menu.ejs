@@ -10,6 +10,11 @@
     <title>Update Menu</title>
   </head>
   <body>
+    <% if (msg) { %>
+    <script>
+      alert("<%= msg %>");
+    </script>
+    <% } %>
     <section class="section-plans">
       <div class="row">
         <div class="col span-10-of-12">
@@ -117,7 +122,7 @@
         <div class="col">&nbsp;</div>
         <a
           style="text-decoration: none; color: #b61010"
-          href="<%- '/restaurant/dashboard/?ownerId=' + owner._id %>"
+          href="<%- '/menu/add-new-item/?ownerId=' + owner._id %>"
         >
           <div
             class="col span-4-of-11"
