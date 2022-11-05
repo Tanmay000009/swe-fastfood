@@ -6,7 +6,11 @@ const validate = require("../utils/validate");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
-  res.render("login.ejs", { user: "Owner", msg: "" });
+  if (req.session.user) {
+    res.redirect("/owner");
+  } else {
+    res.render("login.ejs", { user: "Owner", msg: "" });
+  }
 });
 
 // Get all owners || Get a specific owner

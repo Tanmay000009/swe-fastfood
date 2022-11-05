@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/css/grid.css">
         <title>Owner</title>
@@ -55,24 +55,8 @@
                         </td>
                         <td width="12" style="text-align: center;">10:05 a.m.</td>
                     </tr>
-                    <!--
-                    <?php 
-                        $al = "select * from ord where cid='$cid'";
-                        $res = mysqli_query($db,$al);
-                        while($item = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
-                            if(strcmp($item['status'],'Cancelled')==0){
-                                echo "<tr><td style=\"text-align: center;\">".$item['oid']."<td style=\"text-align: center;\">".$item['odate']."<td style=\"text-align: center;\">".$item['cost']."</td>";
-                                echo "<td style=\"margin:10px; background: rgba(245, 70, 70, 0.8);color:black; text-align: center;\"><a href='empordview.php?oid=".$item['oid']."' style=\"text-decoration:none; color:black;\">Cancelled</a></td>";
-                                echo "</tr>";                               
-                            }
-                            else if(strcmp($item['status'],'Completed')==0){
-                                echo "<tr><td style=\"text-align: center;\">".$item['oid']."<td style=\"text-align: center;\">".$item['odate']."<td style=\"text-align: center;\">".$item['cost']."</td>";
-                                echo "<td style=\"margin:10px; background: rgba(58, 216, 51, 0.8);color:black; text-align: center;\"><a href='empordview.php?oid=".$item['oid']."' style=\"text-decoration:none; color:black;\">Completed</a></td>";
-                                echo "</tr>";                               
-                            }
-                        }
-                    ?>
-                -->
+                    
+                   
                 </table>
                 <div class="row" style="padding-top: 40px;">
                     <a style="text-decoration: none; color:#B61010;" href="admin_completed_orders.html">
