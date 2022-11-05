@@ -6,7 +6,7 @@ const validate = require("../utils/validate");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
-  res.render("customer.ejs");
+  res.render("login.ejs", { user: "Customer" });
 });
 
 // Get all customers || Get a specific customer
