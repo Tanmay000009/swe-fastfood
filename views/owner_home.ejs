@@ -4,7 +4,7 @@
         <link rel="stylesheet" type="text/css" href="/css/style.css">
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/css/grid.css">
-        <title>Owner</title>
+        <title><%= restaurant.name %></title>
     </head>
     <body>
         <section class="section-plans">
@@ -59,22 +59,23 @@
                    
                 </table>
                 <div class="row" style="padding-top: 40px;">
-                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/completed-orders/?ownerId=' + owner._id %>">
+                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/completed-orders?ownerId=' + owner._id %>">
                         <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
                             Completed Orders
                         </div>
                     </a>
                     <div class="col">&nbsp;</div>
-                    <a style="text-decoration: none; color: white;" href="<%- '/restaurant/current-orders/?ownerId=' + owner._id %>">
+                    <a style="text-decoration: none; color: white;" href="<%- '/restaurant/current-orders?ownerId=' + owner._id %>">
                         <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010;">
                             Current Orders
                         </div>
                     </a>
                     <div class="col">&nbsp;</div>
-                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/update-menu/?ownerId=' + owner._id %>">
+                    <a style="text-decoration: none; color:#B61010;" href="<%- '/restaurant/update-menu?ownerId=' + owner._id %>">
                         <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
                             Update Menu
                         </div>
+                        </a>
                     </span>
                 </div>
         </section>

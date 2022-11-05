@@ -5,27 +5,40 @@ const validate = require("../utils/validate");
 const router = express.Router();
 
 router.get("/update-menu", (req, res) => {
-  const { ownerId } = req.params;
+  const userName = req.decodedToken.userName;
   if (req.session.owner) {
-    res.render("owner_update_menu.ejs", { msg: "", ownerId });
+    res.render("owner_update_menu.ejs", { msg: "", userName });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
 });
 
-router.get("/current-orders", (req, res) => {
-  const { ownerId } = req.params;
+router.get("/current-orders", validate, (req, res) => {
+  const userName = req.decodedToken.userName;
   if (req.session.owner) {
-    res.render("owner_current_orders.ejs", { msg: "", ownerId });
+    res.render("owner_current_orders.ejs", { msg: "", userName });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
 });
 
-router.get("/completed-orders", (req, res) => {
-  const { ownerId } = req.params;
+router.get("/completed-orders", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  console.log(req.params);
+  const owner = await Owner.findOne({ userName: userName });
   if (req.session.owner) {
-    res.render("owner_completed_orders.ejs", { msg: "", ownerId });
+    res.render("owner_completed_orders.ejs", { msg: "", owner });
+  } else {
+    res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
+  }
+});
+
+router.get("/dashboard", async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const owner = await findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  if (req.session.owner) {
+    res.render("owner_home.ejs", { msg: "", restaurant, owner });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
