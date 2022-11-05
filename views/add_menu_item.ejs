@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/stordstatc.css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/grid.css">
+        <title>Add Menu Item</title>
+        <style>
+            input, textarea {
+                min-width: 100%;
+                max-width: 12rem;
+                padding: 7px;
+                border-radius: 3px;
+                border: 1px solid #ccc;
+                background-color: rgba(24, 49, 79, 0.06);
+                font-size: 80%;
+                margin: 1rem 0;
+                font-family: inherit;
+            }
+            section {
+                padding: 50px 0;
+            }
+            button {
+                color: white;
+                margin: 1rem 0 3rem;
+                box-shadow: 4px 4px 10px rgb(12 10 72 / 15%);
+                text-align: center;
+                width: 100%;
+                border: 2px solid #B61010;
+                background-color: #B61010;
+                padding: .4rem 1rem;
+            }
+            .menu-form{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="section-plans">
+            <div class="row">
+                <div class="col span-10-of-12">
+                    <img src="images/person.png" style="border-radius: 20%; width: 5vw;">
+                    <div style="display: inline-block; vertical-align: super">
+
+                        Canteen Name
+                        
+                    </div>
+                </div>
+
+                <div class="col span-1-of-12"><a style="text-decoration: none; background-color: #B61010; padding: 10% 20%; color: white; vertical-align: text-bottom; margin-top: 20%; margin-bottom: 20%; box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15)" href="index.html">Logout</a></div>
+
+            </div>
+        </section>
+        <section class="section-plans" style="padding:20px 0;">
+            <div class="row">
+                <h2 style="color:#B61010">ADD MENU ITEM</h2>
+            </div>
+        </section>
+        <section class="section-plans menu-form">
+            <form action="" method="post">
+                <label for="name">Name</label> <br>
+                <input id="name" type="text" class="validate" name="name" required><br>
+                <label for="description">Description</label><br>
+                <textarea name="description" id="description" cols="20" rows="8" required></textarea> <br>
+                <label for="price">Price</label> <br>
+                <input id="price" type="number" class="validate" name="price" required> <br>
+                <label for="image">Image</label> <br>
+                <input id="image" type="file" class="validate" name="image" value = "Browse" required> <br>
+                <button type="submit"> Add Item</button>
+            </form>
+        </section>
+        <section class="section-plans">
+            <div class="row" style="padding-top: 40px;">
+                <a style="text-decoration: none; color:#B61010;" href="admin_home.html">
+                    <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
+                        Dashboard
+                    </div>
+                </a>
+                <div class="col">&nbsp;</div>
+                <a style="text-decoration: none; color: white;" href="admin_completed_orders.html">
+                    <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010;">
+                        Completed Orders
+                    </div>
+                </a>
+                <div class="col">&nbsp;</div>
+                <a style="text-decoration: none; color: #B61010;" href="admin_current_orders.html">
+                    <div class="col span-4-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;">
+                        Current Orders
+                    </div>
+                </a>
+            </div>
+        </section>
+   </body>
+</html>

@@ -3,7 +3,7 @@ require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 function validate(req, res, next) {
-  const token = req.headers["x-access-token"];
+  const token = req.headers["token"];
   if (!token) {
     return res.status(401).json({
       error: "No token provided",

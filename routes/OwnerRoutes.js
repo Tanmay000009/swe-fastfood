@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const Owner = require("../models/Owner");
 const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
+const Restaurant = require("../models/Restaurant");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
@@ -19,6 +20,12 @@ router.get("/signup", (req, res) => {
   } else {
     res.render("signup.ejs", { user: "Owner", msg: "" });
   }
+});
+
+router.get("/new/restaurant", (req, res) => {
+  const token = req.headers.authorization;
+  console.log(token);
+  res.render("add_new_restaurant.ejs", { user: "Owner", msg: "", token });
 });
 
 // Get all owners || Get a specific owner
@@ -176,7 +183,7 @@ router.post("/login", async (req, res) => {
         msg: "Incorrect Username/Password",
       });
     } else {
-      bcrypt.compare(req.body.password, owner.password, (err, result) => {
+      bcrypt.compare(req.body.password, owner.password, async (err, result) => {
         if (err) {
           return res.render("login.ejs", {
             user: "Owner",
@@ -189,10 +196,22 @@ router.post("/login", async (req, res) => {
             userName: owner.userName,
           };
           const token = getToken(info, "2h");
-          // store token in session
-          req.session.token = token;
+          const restaurant = await Restaurant.findOne({
+            ownerId: owner._id,
+          });
 
-          res.render("owner_home.ejs", { owner, token });
+          if (!restaurant) {
+            // store token in session
+            req.session.token = token;
+            return res.render("add_new_restaurant.ejs", {
+              msg: "Please add your restaurant details",
+              ownerId: owner._id,
+            });
+          } else {
+            // store token in session
+            req.session.token = token;
+            res.render("owner_home.ejs", { owner, token, restaurant });
+          }
         } else {
           res.status(401).json({ msg: "Incorrect Username or Password" });
           return;

@@ -27,15 +27,18 @@ router.get("/:restaurantId", async (req, res) => {
 });
 
 // Create a new restaurant
-router.post("/", validate, async (req, res) => {
-  const ownerUserName = req.decodedToken.userName;
-  console.log("ownerUserName", req.decodedToken);
+router.post("/", async (req, res) => {
+  const ownerId = req.body.ownerId;
+  console.log(req.body);
+  console.log("ownerId", ownerId);
   // verify owner
-  const owner = await Owner.findOne({ userName: ownerUserName });
+  const owner = await Owner.findById(ownerId);
 
   if (!owner) {
-    res.status(400).json({ msg: "User does not exist" });
-    return;
+    res.render("add_new_restaurant.ejs", {
+      ownerId,
+      msg: "Owner not found",
+    });
   }
 
   const {
@@ -64,19 +67,34 @@ router.post("/", validate, async (req, res) => {
     return;
   }
   // check for existing restaurant
-  const existingRestaurant = await Restaurant.findOne({ email });
+  const existingRestaurant = await Restaurant.findOne({
+    ownerId,
+  });
   if (existingRestaurant) {
-    res.status(400).json({ msg: "Restaurant already exists" });
-    return;
+    res.render("owner_home.ejs", {
+      ownerId,
+      restaurant: existingRestaurant,
+      msg: "Restaurant already exists",
+    });
   }
 
-  req.body.ownerId = owner._id;
-  req.body.ownerName = owner.name;
-
   try {
-    const restaurant = new Restaurant(req.body);
+    const restaurant = new Restaurant({
+      email,
+      restaurantName,
+      restaurantPhone,
+      restaurantAddress,
+      restaurantZip,
+      ownerId,
+      ownerName: owner.name,
+    });
+    console.log("restaurant", restaurant);
     await restaurant.save();
-    res.json(restaurant);
+    res.render("owner_home.ejs", {
+      ownerId,
+      restaurant,
+      msg: "Restaurant created successfully",
+    });
   } catch (err) {
     console.log("Error in creating restaurant", err);
     res.sendStatus(500);
