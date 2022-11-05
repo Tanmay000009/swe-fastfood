@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/grid.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <title>Order Cart</title>
+    </head>
+    <body>
+        <section class="section-plans">
+            <div class="row">
+                <div class="col span-10-of-12">
+                    <img src="images/person.png" style="border-radius: 20%; width: 5vw;">
+                    <div style="display: inline-block; vertical-align: super"><?php echo $row['name']?><br><?php echo $row['custid']?></div>
+                </div>
+                <div class="col span-1-of-12"><a style="text-decoration: none; background-color: #B61010; padding: 10% 20%; color: white; vertical-align: text-bottom; margin-top: 20%; margin-bottom: 20%; box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15)" href="index.html">Logout</a></div>
+
+            </div>
+        </section>
+        <section class="section-cant" style="padding-top: 100px;">
+            <div class="row">
+                <h2>YOUR CART</h2>
+            </div>
+            <div class="row">
+                <form method="post" id="sjt" name="sjt" action="">
+                
+                <table style="font-family: 'Lato','Arial', sans-serif;">
+                    <div class="section-plans"></div>
+                    <tr>
+                        <td width="140"><strong>Item</strong></td>
+                        <td width="20"><strong>Quantity</strong></td>
+                        <td width="20"><strong>Total Price</strong></td>
+                        <td width="10"><strong>Time</strong></td>
+                    </tr>
+                </div>
+                    <tr>
+                        <td width=150>Order 1</td>
+                        <td width=15>2</td>
+                        <td width=15>Rs. 200</td>
+                        <td width="15"><input type="time" id="time"></td>
+                    </tr>
+
+                </table>
+                
+                <div class="row" style="padding-top: 50px;">
+                <a style="text-decoration: none; color:#B61010;" href="user_home.html">
+                    <div class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;">
+                        Go Back
+                    </div>
+                </a>
+                <div class="col" style="padding: 0 0 200px 50px;"></div>
+                
+                    <buttn onclick=orderconfirm() class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010; color: white; font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;" id="Submit" name="Submit" for="sjt">
+                        Confirm Order
+                    </button>
+                
+                </div>
+                
+                </form>
+            </div>
+        </section>
+        <script>
+            function orderconfirm()
+            {
+                alert("Your order has been placed.");
+            }
+        </script>
+    </body>
+</html>
