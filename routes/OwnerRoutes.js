@@ -52,31 +52,49 @@ router.get("/", async (req, res) => {
 // Create a new owner
 router.post("/", async (req, res) => {
   const { email, password, name, phone, userName } = req.body;
+
   if (!email || !password || !name || !phone || !userName) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Please enter all fields",
+    });
   }
   if (password.length < 6) {
-    res.status(400).json({ msg: "Password must be at least 6 characters" });
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Password must be at least 6 characters",
+    });
     return;
   }
   if (phone.length < 10 || phone.length > 10) {
-    res.status(400).json({ msg: "Phone number must be 10 characters" });
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Phone number must be 10 characters",
+    });
     return;
   }
   if (userName.length < 6) {
-    res.status(400).json({ msg: "Username must be at least 6 characters" });
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Username must be at least 6 characters",
+    });
     return;
   }
   // check for existing user
   const existingOwner = await Owner.findOne({ email });
   if (existingOwner) {
-    res.status(400).json({ msg: "User already exists" });
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "User already exists",
+    });
     return;
   }
   const existingUser = await Owner.findOne({ userName });
   if (existingUser) {
-    res.status(400).json({ msg: "Username already exists" });
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Username already exists",
+    });
     return;
   }
   // hash password
@@ -86,7 +104,9 @@ router.post("/", async (req, res) => {
   try {
     const owner = new Owner(req.body);
     await owner.save();
-    res.status(200).json({ msg: "Owner created successfully" });
+    res.render("index.ejs", {
+      msg: "Owner created successfully",
+    });
   } catch (err) {
     console.log("Error in creating owner", err);
     res.sendStatus(500);

@@ -74,7 +74,7 @@
                       <form
                         class="col s12"
                         method="POST"
-                        action="<% "/" + user + '/' %>"
+                        action="<%- "/" + user.toLowerCase() + '/' %>"
                       >
                         <div class="row">
                           <div class="input-field col s6 offset-s3">
@@ -118,10 +118,10 @@
                               id="uname"
                               type="text"
                               class="validate"
-                              name="username"
+                              name="userName"
                               required
                             />
-                            <label for="username">Username</label>
+                            <label for="userName">Username</label>
                           </div>
                         </div>
                         <div class="row">

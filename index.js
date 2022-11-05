@@ -33,7 +33,7 @@ app.use("/order", require("./routes/OrderRoutes"));
 app.use("/menuitem", require("./routes/MenuItemRoutes"));
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index.ejs", { msg: "" });
 });
 
 app.listen(process.env.PORT || 3000, () => {
