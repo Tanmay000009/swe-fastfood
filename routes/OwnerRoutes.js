@@ -22,6 +22,14 @@ router.get("/signup", (req, res) => {
   }
 });
 
+router.get("/update-menu", (req, res) => {
+  if (req.session.user) {
+    res.render("owner_update_menu.ejs", { msg: "", ownerId });
+  } else {
+    res.render("signup.ejs", { user: "Owner", msg: "" });
+  }
+});
+
 router.get("/new/restaurant", (req, res) => {
   const token = req.headers.authorization;
   console.log(token);
@@ -105,7 +113,7 @@ router.post("/", async (req, res) => {
     const owner = new Owner(req.body);
     await owner.save();
     res.render("index.ejs", {
-      msg: "Owner created successfully",
+      msg: "Owner created successfully! Please login",
     });
   } catch (err) {
     console.log("Error in creating owner", err);

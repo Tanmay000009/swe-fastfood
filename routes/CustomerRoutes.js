@@ -46,30 +46,47 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const { email, password, name, phone, userName } = req.body;
   if (!email || !password || !name || !phone || !userName) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Please enter all fields",
+    });
   }
   if (password.length < 6) {
-    res.status(400).json({ msg: "Password must be at least 6 characters" });
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Password must be at least 6 characters",
+    });
     return;
   }
   if (phone.length < 10 || phone.length > 10) {
-    res.status(400).json({ msg: "Phone number must be 10 characters" });
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Phone number must be 10 characters",
+    });
     return;
   }
   if (userName.length < 6) {
-    res.status(400).json({ msg: "Username must be at least 6 characters" });
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Username must be at least 6 characters",
+    });
     return;
   }
   // check for existing user
   const existingCustomer = await Customer.findOne({ email });
   if (existingCustomer) {
-    res.status(400).json({ msg: "User already exists" });
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "User already exists",
+    });
     return;
   }
   const existingUser = await Customer.findOne({ userName });
   if (existingUser) {
-    res.status(400).json({ msg: "Username already exists" });
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Username already exists",
+    });
     return;
   }
   // hash password
@@ -79,7 +96,9 @@ router.post("/", async (req, res) => {
   try {
     const customer = new Customer(req.body);
     await customer.save();
-    res.status(200).json({ msg: "Customer created successfully" });
+    res.render("index.ejs", {
+      msg: "Customer created successfully! Please login",
+    });
   } catch (err) {
     console.log("Error in creating customer", err);
     res.sendStatus(500);
