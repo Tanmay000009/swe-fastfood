@@ -18,15 +18,16 @@ router.get("/signup", (req, res) => {
   if (req.session.user) {
     res.redirect("/owner");
   } else {
-    res.render("signup.ejs", { user: "Owner", msg: "" });
+    res.render("signup.ejs", { user: "Owner", msg: "Login expired" });
   }
 });
 
 router.get("/update-menu", (req, res) => {
-  if (req.session.user) {
+  const { ownerId } = req.body;
+  if (req.session.owner) {
     res.render("owner_update_menu.ejs", { msg: "", ownerId });
   } else {
-    res.render("signup.ejs", { user: "Owner", msg: "" });
+    res.render("login.ejs", { user: "Owner", msg: "" });
   }
 });
 
@@ -224,6 +225,7 @@ router.post("/login", async (req, res) => {
             userName: owner.userName,
           };
           const token = getToken(info, "2h");
+          res.cookie("token", token, { httpOnly: true });
           const restaurant = await Restaurant.findOne({
             ownerId: owner._id,
           });
