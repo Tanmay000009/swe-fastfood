@@ -17,6 +17,12 @@ app.use(
   })
 );
 
+app.use(express.static(__dirname + "/assets"));
+
+// View Engine
+app.set("view engine", "ejs");
+app.set("views", "./views");
+
 app.use("/restaurant", require("./routes/RestaurantRoutes"));
 app.use("/menu", require("./routes/MenuRoutes"));
 app.use("/customer", require("./routes/CustomerRoutes"));
@@ -25,7 +31,7 @@ app.use("/order", require("./routes/OrderRoutes"));
 app.use("/menuitem", require("./routes/MenuItemRoutes"));
 
 app.get("/", (req, res) => {
-  res.send("Hi");
+  res.render("index");
 });
 
 app.listen(process.env.PORT || 3000, () => {
