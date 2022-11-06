@@ -71,6 +71,31 @@
                             <option value="10">10</option>
                           </select></td>
                         </tr>
+                        <% } else { %>
+
+                            
+                            <tr  style="display: none;">
+                                <input type="hidden" name="<%- i + "name" %>" value="<%= menuItems[i].name %>">
+                                <input type="hidden" name="<%- i + "price" %>" value="<%= menuItems[i].price %>">
+                                <input type="hidden" name="<%- i + "id" %>" value="<%= menuItems[i]._id %>">
+                            <td id="<%- i + "name" %>" name="<%- i + "name" %>" value="<%= menuItems[i].name %>" width=150><%= menuItems[i].name %></td>
+                            <td id="<%- i + "price" %>" name="<%- i + "price" %>" value="<%= menuItems[i].price %>" width=15><%= menuItems[i].price %></td>
+                            
+                               
+                            <td  width=15><select name="<%- i + "quantity" %>" id="<%- i + "quantity" %>" class="quantity">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                              </select></td>
+                            </tr>
                         <% } %>
                         <% } %>
                         <tr>

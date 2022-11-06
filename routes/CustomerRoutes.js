@@ -4,7 +4,47 @@ const Customer = require("../models/Customer");
 const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const Restaurant = require("../models/Restaurant");
+const Feedback = require("../models/Feedback");
 const router = express.Router();
+
+router.get("/feedback", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  const restaurants = await Restaurant.find();
+  console.log(restaurants);
+  req.session.token = req.session.token;
+  res.render("feedback.ejs", { msg: "", customer, restaurants });
+});
+
+router.post("/feedback/submit", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  req.session.token = req.session.token;
+  const customer = await Customer.findOne({ userName: userName });
+  const { comment, rating, restaurant } = req.body;
+  const restaurantId = restaurant;
+  const feedback = {
+    comment,
+    rating,
+    restaurantId,
+  };
+
+  const restaurants = await Restaurant.find();
+  try {
+    const newFeedback = new Feedback(feedback);
+    await newFeedback.save();
+    res.render("customer_home.ejs", {
+      msg: "Feedback submitted successfully!",
+      customer,
+      restaurants,
+    });
+  } catch (err) {
+    console.log("Error in creating feedback", err);
+    res.render("customer_home.ejs", {
+      msg: "Error in submitting feedback",
+      customer,
+    });
+  }
+});
 
 router.get("/order-history", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
