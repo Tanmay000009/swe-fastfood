@@ -8,7 +8,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" type="text/css" href="/css/grid.css" />
-    <title>User</title>
+    <title>Current Orders</title>
   </head>
   <body>
     <section class="section-cant">
@@ -65,21 +65,40 @@
               <strong>Status</strong>
             </td>
             <td width="15" style="text-align: center">
+              <strong>Order Date</strong>
+            </td>
+            <td width="15" style="text-align: center">
               <strong>Order Time</strong>
             </td>
           </tr>
-          <tr>
-            <td width="15" style="text-align: center">1</td>
-            <td width="15" style="text-align: center">
-              Sample Ordered Items 1
+          <% for (var i=0;i<orders.length;i++) {%>
+            <tr>
+              <td width="15" style="text-align: center"><%= i %></td>
+              <td width="15" style="text-align: center">
+                <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
+                  <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
+                <% } %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].totalPrice %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].canteenName %>
+              </td>
+              <td width="15" style="text-align: center; color: #19d22d">
+                <%= orders[i].status %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].date %>
+
+              </tr>
+              <td width="15" style="text-align: center">
+                <%= orders[i].time %>
+
+              </tr>
             </td>
-            <td width="15" style="text-align: center">Rs. 123</td>
-            <td width="15" style="text-align: center">Canteen 1</td>
-            <td width="15" style="text-align: center; color: #19d22d">
-              Accepted
-            </td>
-            <td width="15" style="text-align: center">10:00 a.m.</td>
-          </tr>
+            <% } %>
+          
           <tr>
             <td width="15" style="text-align: center">2</td>
             <td width="15" style="text-align: center">

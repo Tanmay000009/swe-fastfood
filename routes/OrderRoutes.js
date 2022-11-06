@@ -1,10 +1,57 @@
 const express = require("express");
 const Customer = require("../models/Customer");
-const { validate } = require("../models/Order");
+const MenuItem = require("../models/MenuItem");
 const Order = require("../models/Order");
 const Restaurant = require("../models/Restaurant");
+const validate = require("../utils/validate");
 
 const router = express.Router();
+
+router.get("/current-orders", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  const orders = await Order.find({
+    customerId: customer._id,
+    status: "Pending",
+  });
+
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
+
+  if (req.session.token) {
+    req.session.token = req.session.token;
+    res.render("customer_current_order.ejs", {
+      msg: "",
+      customer,
+      orders: orderMapped,
+    });
+  } else {
+    res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+  }
+});
 
 // Get all orders
 router.get("/", async (req, res) => {
