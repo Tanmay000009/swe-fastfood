@@ -72,8 +72,10 @@
             </td>
           </tr>
           <% for (var i=0;i<orders.length;i++) {%>
+            <% if (orders[i].status == "Accepted" || orders[i].status == "Pending") {%>
+              
             <tr>
-              <td width="15" style="text-align: center"><% i+1 %></td>
+              <td width="15" style="text-align: center"><%= i+1 %></td>
               <td width="15" style="text-align: center">
                 <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
                   <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
@@ -85,18 +87,24 @@
               <td width="15" style="text-align: center">
                 <%= orders[i].canteenName %>
               </td>
-              <td width="15" style="text-align: center; color: #19d22d">
-                <%= orders[i].status %>
-              </td>
+              <% if (orders[i].status == "Accepted") {%>
+                <td width="15" style="text-align: center; color: #19d22d">
+                  <%= orders[i].status %>
+                </td>
+                <% } else { %>
+                  <td width="15" style="text-align: center;">
+                    <%= orders[i].status %>
+                  </td>
+                  <% } %>
               <td width="15" style="text-align: center">
                 <%= orders[i].date %>
-
+                </td>
+                <td width="15" style="text-align: center">
+                  <%= orders[i].time %>
+  
+                </td>
               </tr>
-              <td width="15" style="text-align: center">
-                <%= orders[i].time %>
-
-              </tr>
-            </td>
+              <% } %>
             <% } %>
           
        
