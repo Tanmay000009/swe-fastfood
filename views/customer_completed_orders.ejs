@@ -52,7 +52,7 @@
               <strong>Order Number</strong>
             </td>
             <td width="15" style="text-align: center">
-              <strong>Order Date</strong>
+              <strong>Order</strong>
             </td>
             <td width="15" style="text-align: center">
               <strong>Price</strong>
@@ -60,7 +60,57 @@
             <td width="15" style="text-align: center">
               <strong>Canteen</strong>
             </td>
+            <td width="15" style="text-align: center">
+              <strong>Status</strong>
+            </td>
+            <td width="15" style="text-align: center">
+              <strong>Order Date</strong>
+            </td>
+            <td width="15" style="text-align: center">
+              <strong>Order Time</strong>
+            </td>
           </tr>
+          <% for (var i=0;i<orders.length;i++) {%>
+            <% if (orders[i].status == "Pending" || orders[i].status == "Accepted") {%>
+              
+              <% } else { %>
+            <tr>
+              <td width="15" style="text-align: center"><%= i+1 %></td>
+              <td width="15" style="text-align: center">
+                <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
+                  <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
+                <% } %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].totalPrice %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].canteenName %>
+              </td>
+              <% if (orders[i].status == "Cancelled") {%>
+                <td width="15" style="text-align: center; color: #b61010">
+                  <%= orders[i].status %>
+                </td>
+                <% } else { %>
+                  <td width="15" style="text-align: center; color: #19d22d">
+                    <%= orders[i].status %>
+                  </td>
+                  <% } %>
+              <td width="15" style="text-align: center">
+                <%= orders[i].date %>
+              </td>
+              <td width="15" style="text-align: center">
+                <%= orders[i].time %>
+
+              
+            </td>
+              </tr>
+              
+
+            <% } %>
+            <% } %>
+          
+       
         </table>
       </div>
     </section>
@@ -85,7 +135,7 @@
         <div class="col"></div>
         <a
           style="text-decoration: none; color: white"
-          href="<%- '/customer/current-orders?customerId=' + customer._id %>"
+          href="<%- '/order/current-orders?customerId=' + customer._id %>"
         >
           <div
             class="col span-5-of-11"

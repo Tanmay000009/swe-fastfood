@@ -73,7 +73,7 @@
           </tr>
           <% for (var i=0;i<orders.length;i++) {%>
             <tr>
-              <td width="15" style="text-align: center"><%= i %></td>
+              <td width="15" style="text-align: center"><% i+1 %></td>
               <td width="15" style="text-align: center">
                 <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
                   <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
@@ -99,18 +99,7 @@
             </td>
             <% } %>
           
-          <tr>
-            <td width="15" style="text-align: center">2</td>
-            <td width="15" style="text-align: center">
-              Sample Ordered Items 2
-            </td>
-            <td width="15" style="text-align: center">Rs. 123</td>
-            <td width="15" style="text-align: center">Canteen 2</td>
-            <td width="15" style="text-align: center; color: #d22419">
-              Rejected
-            </td>
-            <td width="15" style="text-align: center">10:30 a.m.</td>
-          </tr>
+       
         </table>
       </div>
     </section>
@@ -135,7 +124,7 @@
         <div class="col"></div>
         <a
           style="text-decoration: none; color: white"
-          href="<%- '/customer/order-history?customerId=' + customer._id %>"
+          href="<%- '/order/order-history?customerId=' + customer._id %>"
         >
           <div
             class="col span-5-of-11"
