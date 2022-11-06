@@ -73,7 +73,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a specific restaurant
-router.get("/:restaurantId", async (req, res) => {
+router.get("/:restaurantId", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const restaurantId = req.params.restaurantId;
   const customer = await Customer.findOne({ userName: userName });
