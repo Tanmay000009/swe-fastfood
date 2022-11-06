@@ -225,36 +225,47 @@ router.post("/", validate, async (req, res) => {
   }
 });
 
-// Create a new order
 router.post("/confirm", validate, async (req, res) => {
-  const { orderItems, restaurantId, customerId, orderTotal } = req.body;
-  console.log(req.body);
+  const { restaurantId } = req.body;
+  const userName = req.decodedToken.userName;
+  // delete object with 0 quantity from req.body
+  const nonZero = Object.keys(req.body).filter(
+    (key) => req.body[key] != 0 && key.includes("quantity")
+  );
+  const keys = nonZero.map((key) => key.replace("quantity", ""));
+  const orderItems = keys.map((key) => {
+    return {
+      menuItemId: key,
+      quantity: req.body[`${key}quantity`],
+      name: req.body[`${key}name`],
+      price: req.body[`${key}price`],
+    };
+  });
+
+  const orderTotal = orderItems.reduce((acc, item) => {
+    return acc + item.price * item.quantity;
+  }, 0);
+
+  console.log(orderTotal);
   req.session.token = req.session.token;
-  if (!orderItems || !restaurantId || !customerId || !orderTotal) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
-  }
+
+  const customer = await Customer.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ _id: restaurantId });
+  const menuItems = await MenuItem.find({ restaurantId: restaurantId });
   try {
-    // verify that the restaurant exists
-    const restaurant = await Restaurant.findById(restaurantId);
-    if (!restaurant) {
-      res.status(400).json({ msg: "Restaurant does not exist" });
-      return;
-    }
-    // verify that the user exists
-    const user = await Customer.findById(customerId);
-    if (!user) {
-      res.status(400).json({ msg: "Customer does not exist" });
-      return;
-    }
-
-    const order = new Order(req.body);
-
-    await order.save();
-    res.json(order);
+    res.render("customer_order_confirm.ejs", {
+      msg: "",
+      orderItems,
+      orderTotal,
+      restaurantId,
+    });
   } catch (err) {
-    console.log("Error in creating order", err);
-    res.sendStatus(500);
+    res.render("restaurant.ejs", {
+      msg: "Error in confirming order",
+      restaurant,
+      customer,
+      menuItems,
+    });
   }
 });
 
