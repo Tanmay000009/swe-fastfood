@@ -225,6 +225,39 @@ router.post("/", validate, async (req, res) => {
   }
 });
 
+// Create a new order
+router.post("/confirm", validate, async (req, res) => {
+  const { orderItems, restaurantId, customerId, orderTotal } = req.body;
+  console.log(req.body);
+  req.session.token = req.session.token;
+  if (!orderItems || !restaurantId || !customerId || !orderTotal) {
+    res.status(400).json({ msg: "Please enter all fields" });
+    return;
+  }
+  try {
+    // verify that the restaurant exists
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      res.status(400).json({ msg: "Restaurant does not exist" });
+      return;
+    }
+    // verify that the user exists
+    const user = await Customer.findById(customerId);
+    if (!user) {
+      res.status(400).json({ msg: "Customer does not exist" });
+      return;
+    }
+
+    const order = new Order(req.body);
+
+    await order.save();
+    res.json(order);
+  } catch (err) {
+    console.log("Error in creating order", err);
+    res.sendStatus(500);
+  }
+});
+
 // Get a specific order
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
