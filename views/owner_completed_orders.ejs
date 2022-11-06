@@ -14,13 +14,7 @@
                     <div style="display: inline-block; vertical-align: super">
 
                         <%= restaurant.name %>
-                        <!-- Canteen Name
-                        <?php echo $row['name']?><br>
-                        <?php 
-                            $nm=$cant['name'];
-                            $loc=$cant['location'];
-                            echo "$nm, $loc"; 
-                        ?>-->
+                        
                         
                     </div>
                 </div>
@@ -33,7 +27,7 @@
         </section>
         <section class="section-plans">
 			<div class="row">
-				<h2>Today's Orders :</h2>
+				<h2>Order History :</h2>
 			</div>
 		</section>
         <section class="section-cant">
@@ -43,8 +37,22 @@
                         <td width=15 style="text-align: center;"><strong>Order Number</strong></td>
                         <td width=15 style="text-align: center;"><strong>Order</strong></td>
                         <td width=15 style="text-align: center;"><strong>Price</strong></td>
+                        <td width=15 style="text-align: center;"><strong>Status</strong></td>
                         <td width=15 style="text-align: center;"><strong>Feedback</strong></td>
                     </tr>
+                    <% for(var i=0; i<orders.length; i++) { %>
+                    <tr>
+                        <td width=15 style="text-align: center;"><%= orders[i].order_id %></td>
+                        <td width=12 style="text-align: center;">
+                            <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
+                                <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
+                              <% } %>
+                        </td>
+                        <td width=15 style="text-align: center;"><%= orders[i].price %></td>
+                        <td width=15 style="text-align: center;"><%= orders[i].status %></td>
+                        <td width=15 style="text-align: center;"><%= orders[i].feedback %></td>
+                    </tr>
+                    <% } %>
                     
                 </table>
             </div>

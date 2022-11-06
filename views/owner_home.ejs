@@ -7,6 +7,11 @@
         <title><%= restaurant.name %></title>
     </head>
     <body>
+        <% if (msg) { %>
+            <script>
+              alert("<%= msg %>");
+            </script>
+            <% } %>
         <section class="section-plans">
             <div class="row">
                 <div class="col span-10-of-12">
@@ -54,7 +59,7 @@
                                     <form method="post" action="<%- "/order/accept/" + orders[i].orderId %>">
                                         <button style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Accept</button>
                                     </form>
-                                    <form style="padding-top: 6px;" method="post" action="<%- "/order/cancel" + orders[i].orderId %>">
+                                    <form style="padding-top: 6px;" method="post" action="<%- "/order/cancel/" + orders[i].orderId %>">
                                         <button style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Decline</button>
                                     </form>
                                 </td>

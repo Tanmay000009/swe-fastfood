@@ -245,8 +245,9 @@ router.post("/accept/:id", validate, async (req, res) => {
   req.session.token = req.session.token;
   const owner = await Owner.findOne({ userName });
   const restaurant = await Restaurant.findOne({ userName });
+  console.log(restaurant);
   let orders = await Order.find({ restaurantId: restaurant._id });
-  const orderMapped = await Promise.all(
+  let orderMapped = await Promise.all(
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
@@ -282,15 +283,7 @@ router.post("/accept/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    const restaurant = await Restaurant.findById(order.userId);
-    if (!restaurant) {
-      res.render("owner_home.ejs", {
-        msg: "Restaurant does not exist",
-        owner,
-        restaurant,
-        orders: orderMapped,
-      });
-    }
+
     if (order.orderStatus === "Completed") {
       res.render("owner_home.ejs", {
         msg: "Order is already completed",
@@ -307,7 +300,7 @@ router.post("/accept/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    if (orderStatus === "Accepted") {
+    if (order.orderStatus === "Accepted") {
       res.render("owner_home.ejs", {
         msg: "Order status cannot be changed once accepted",
         owner,
@@ -315,10 +308,11 @@ router.post("/accept/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    order.orderStatus = "Accepted";
-    await order.save();
-    order = await Order.find({ restaurantId: restaurant._id });
-    const orderMapped = await Promise.all(
+    const orderUpdated = await Order.findByIdAndUpdate(id, {
+      orderStatus: "Accepted",
+    });
+    orders = await Order.find({ restaurantId: restaurant._id });
+    orderMapped = await Promise.all(
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
@@ -368,8 +362,9 @@ router.post("/cancel/:id", validate, async (req, res) => {
   req.session.token = req.session.token;
   const owner = await Owner.findOne({ userName });
   const restaurant = await Restaurant.findOne({ userName });
+  console.log(restaurant);
   let orders = await Order.find({ restaurantId: restaurant._id });
-  const orderMapped = await Promise.all(
+  let orderMapped = await Promise.all(
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
@@ -405,15 +400,7 @@ router.post("/cancel/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    const restaurant = await Restaurant.findById(order.userId);
-    if (!restaurant) {
-      res.render("owner_home.ejs", {
-        msg: "Restaurant does not exist",
-        owner,
-        restaurant,
-        orders: orderMapped,
-      });
-    }
+
     if (order.orderStatus === "Completed") {
       res.render("owner_home.ejs", {
         msg: "Order is already completed",
@@ -430,7 +417,7 @@ router.post("/cancel/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    if (orderStatus === "Accepted") {
+    if (order.orderStatus === "Accepted") {
       res.render("owner_home.ejs", {
         msg: "Order status cannot be changed once accepted",
         owner,
@@ -438,10 +425,11 @@ router.post("/cancel/:id", validate, async (req, res) => {
         orders: orderMapped,
       });
     }
-    order.orderStatus = "Cancelled";
-    await order.save();
-    order = await Order.find({ restaurantId: restaurant._id });
-    const orderMapped = await Promise.all(
+    const orderUpdated = await Order.findByIdAndUpdate(id, {
+      orderStatus: "Cancelled",
+    });
+    orders = await Order.find({ restaurantId: restaurant._id });
+    orderMapped = await Promise.all(
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
@@ -468,7 +456,7 @@ router.post("/cancel/:id", validate, async (req, res) => {
       })
     );
     res.render("owner_home.ejs", {
-      msg: "Order accepted successfully",
+      msg: "Order cancelled successfully",
       owner,
       restaurant,
       orders: orderMapped,
