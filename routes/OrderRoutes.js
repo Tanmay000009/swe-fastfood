@@ -2,6 +2,7 @@ const express = require("express");
 const Customer = require("../models/Customer");
 const MenuItem = require("../models/MenuItem");
 const Order = require("../models/Order");
+const Owner = require("../models/Owner");
 const Restaurant = require("../models/Restaurant");
 const validate = require("../utils/validate");
 
@@ -29,6 +30,7 @@ router.get("/current-orders", validate, async (req, res) => {
       const restaurant = await Restaurant.findById(order.restaurantId);
 
       return {
+        orderId: order._id,
         orderItems,
         canteenName: restaurant.restaurantName,
         restaurantAddress: restaurant.restaurantAddress,
@@ -59,7 +61,6 @@ router.get("/order-history", validate, async (req, res) => {
   const customer = await Customer.findOne({ userName });
   const orders = await Order.find({
     customerId: customer._id,
-    status: { $not: "Pending" },
   });
   console.log("orders", orders);
   const orderMapped = await Promise.all(
@@ -76,6 +77,7 @@ router.get("/order-history", validate, async (req, res) => {
       const restaurant = await Restaurant.findById(order.restaurantId);
 
       return {
+        orderId: order._id,
         orderItems,
         canteenName: restaurant.restaurantName,
         restaurantAddress: restaurant.restaurantAddress,
@@ -237,103 +239,248 @@ router.get("/:id", async (req, res) => {
 });
 
 // Accept a specific order (only the order status)
-router.put("/:id", validate, async (req, res) => {
+router.post("/accept/:id", validate, async (req, res) => {
   const { id } = req.params;
-  const { orderStatus } = req.body;
   const userName = req.decodedToken.userName;
+  req.session.token = req.session.token;
+  const owner = await Owner.findOne({ userName });
+  const restaurant = await Restaurant.findOne({ userName });
+  let orders = await Order.find({ restaurantId: restaurant._id });
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
 
-  if (!orderStatus) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
-  }
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
 
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
   try {
     const order = await Order.findById(id);
     if (!order) {
-      res.status(400).json({ msg: "Order does not exist" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Order does not exist",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
     const restaurant = await Restaurant.findById(order.userId);
     if (!restaurant) {
-      res.status(400).json({ msg: "Restaurant does not exist" });
-      return;
-    }
-    if (restaurant.userName !== userName) {
-      res.status(400).json({ msg: "Restaurant does not match" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Restaurant does not exist",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
     if (order.orderStatus === "Completed") {
-      res.status(400).json({ msg: "Order is already completed" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Order is already completed",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
     if (order.orderStatus === "Cancelled") {
-      res.status(400).json({ msg: "Order is already cancelled" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Order is already cancelled",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
     if (orderStatus === "Accepted") {
-      res
-        .status(400)
-        .json({ msg: "Order status cannot be changed once accepted" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Order status cannot be changed once accepted",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
-    order.orderStatus = orderStatus;
+    order.orderStatus = "Accepted";
     await order.save();
-    res.json(order);
+    order = await Order.find({ restaurantId: restaurant._id });
+    const orderMapped = await Promise.all(
+      orders.map(async (order) => {
+        const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+          const menuItem = await MenuItem.findById(orderItem.item);
+          return {
+            menuItemName: menuItem.name,
+            quantity: orderItem.quantity,
+          };
+        });
+
+        const orderItems = await Promise.all(orderItemsMapped);
+        const restaurant = await Restaurant.findById(order.restaurantId);
+
+        return {
+          orderId: order._id,
+          orderItems,
+          canteenName: restaurant.restaurantName,
+          restaurantAddress: restaurant.restaurantAddress,
+          orderStatus: order.orderStatus,
+          totalPrice: order.orderTotal,
+          status: order.orderStatus,
+          date: order.createdDate.toLocaleDateString(),
+          time: order.createdDate.toLocaleTimeString(),
+        };
+      })
+    );
+    res.render("owner_home.ejs", {
+      msg: "Order accepted successfully",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
   } catch (err) {
     console.log("Error in updating order", err);
-    res.sendStatus(500);
+    res.render("owner_home.ejs", {
+      msg: "Error in updating order",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
   }
 });
 
 // Cancel a specific order
-router.put("/:id", validate, async (req, res) => {
+router.post("/cancel/:id", validate, async (req, res) => {
   const { id } = req.params;
-  const { orderStatus } = req.body;
   const userName = req.decodedToken.userName;
+  req.session.token = req.session.token;
+  const owner = await Owner.findOne({ userName });
+  const restaurant = await Restaurant.findOne({ userName });
+  let orders = await Order.find({ restaurantId: restaurant._id });
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
 
-  if (!orderStatus || userName) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
-  }
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
 
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
   try {
     const order = await Order.findById(id);
     if (!order) {
-      res.status(400).json({ msg: "Order does not exist" });
-      return;
+      res.render("owner_home.ejs", {
+        msg: "Order does not exist",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
     const restaurant = await Restaurant.findById(order.userId);
-    const customer = await Customer.findById(order.userId);
-    if (!restaurant && !customer) {
-      res.status(400).json({ msg: "User does not exist" });
-      return;
+    if (!restaurant) {
+      res.render("owner_home.ejs", {
+        msg: "Restaurant does not exist",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
-    if (restaurant.userName !== userName && customer.userName !== userName) {
-      res.status(400).json({ msg: "User does not match" });
-      return;
+    if (order.orderStatus === "Completed") {
+      res.render("owner_home.ejs", {
+        msg: "Order is already completed",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
-    // if the user is a restaurant, they can only cancel orders that are pending
-    if (restaurant && order.orderStatus !== "Pending") {
-      res
-        .status(400)
-        .json({ msg: "Order cannot be cancelled after accepting" });
-      return;
+    if (order.orderStatus === "Cancelled") {
+      res.render("owner_home.ejs", {
+        msg: "Order is already cancelled",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
-    // if the user is a customer, they can only cancel order within 2 minutes of placing the order
-    const timeDiff = Date.now() - order.createdDate;
-    if (customer && timeDiff > 120000) {
-      res
-        .status(400)
-        .json({ msg: "Order cannot be cancelled after 2 minutes" });
-      return;
+    if (orderStatus === "Accepted") {
+      res.render("owner_home.ejs", {
+        msg: "Order status cannot be changed once accepted",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
     }
-
-    order.orderStatus = orderStatus;
+    order.orderStatus = "Cancelled";
     await order.save();
-    res.json(order);
+    order = await Order.find({ restaurantId: restaurant._id });
+    const orderMapped = await Promise.all(
+      orders.map(async (order) => {
+        const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+          const menuItem = await MenuItem.findById(orderItem.item);
+          return {
+            menuItemName: menuItem.name,
+            quantity: orderItem.quantity,
+          };
+        });
+
+        const orderItems = await Promise.all(orderItemsMapped);
+        const restaurant = await Restaurant.findById(order.restaurantId);
+
+        return {
+          orderId: order._id,
+          orderItems,
+          canteenName: restaurant.restaurantName,
+          restaurantAddress: restaurant.restaurantAddress,
+          orderStatus: order.orderStatus,
+          totalPrice: order.orderTotal,
+          status: order.orderStatus,
+          date: order.createdDate.toLocaleDateString(),
+          time: order.createdDate.toLocaleTimeString(),
+        };
+      })
+    );
+    res.render("owner_home.ejs", {
+      msg: "Order accepted successfully",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
   } catch (err) {
     console.log("Error in updating order", err);
-    res.sendStatus(500);
+    res.render("owner_home.ejs", {
+      msg: "Error in updating order",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
   }
 });
 

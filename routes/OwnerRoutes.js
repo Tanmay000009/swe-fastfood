@@ -4,6 +4,8 @@ const Owner = require("../models/Owner");
 const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const Restaurant = require("../models/Restaurant");
+const Order = require("../models/Order");
+const MenuItem = require("../models/MenuItem");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
@@ -219,22 +221,56 @@ router.post("/login", async (req, res) => {
             userName: owner.userName,
           };
           const token = getToken(info, "2h");
-          res.cookie("token", token, { httpOnly: true });
+          req.session.token = token;
           const restaurant = await Restaurant.findOne({
             ownerId: owner._id,
           });
 
           if (!restaurant) {
-            // store token in session
-            req.session.token = token;
             return res.render("add_new_restaurant.ejs", {
               msg: "Please add your restaurant details",
               ownerId: owner._id,
             });
           } else {
             // store token in session
-            req.session.token = token;
-            res.render("owner_home.ejs", { owner, token, restaurant });
+            const orders = await Order.find({ restaurantId: restaurant._id });
+            const orderMapped = await Promise.all(
+              orders.map(async (order) => {
+                const orderItemsMapped = order.orderItems.map(
+                  async (orderItem) => {
+                    const menuItem = await MenuItem.findById(orderItem.item);
+                    return {
+                      menuItemName: menuItem.name,
+                      quantity: orderItem.quantity,
+                    };
+                  }
+                );
+
+                const orderItems = await Promise.all(orderItemsMapped);
+                const restaurant = await Restaurant.findById(
+                  order.restaurantId
+                );
+
+                return {
+                  orderId: order._id,
+                  orderItems,
+                  canteenName: restaurant.restaurantName,
+                  restaurantAddress: restaurant.restaurantAddress,
+                  orderStatus: order.orderStatus,
+                  totalPrice: order.orderTotal,
+                  status: order.orderStatus,
+                  date: order.createdDate.toLocaleDateString(),
+                  time: order.createdDate.toLocaleTimeString(),
+                };
+              })
+            );
+            res.render("owner_home.ejs", {
+              msg: "",
+              owner,
+              token,
+              restaurant,
+              orders: orderMapped,
+            });
           }
         } else {
           res.status(401).json({ msg: "Incorrect Username or Password" });
