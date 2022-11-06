@@ -52,6 +52,8 @@ router.get("/current-orders", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -96,6 +98,8 @@ router.get("/completed-orders", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -139,6 +143,8 @@ router.get("/dashboard", validate, async (req, res) => {
         restaurantAddress: restaurant.restaurantAddress,
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         status: order.orderStatus,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),

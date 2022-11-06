@@ -44,6 +44,7 @@
                         <td width=12 style="text-align: center;"><strong>Order</strong></td>
                         <td width=12 style="text-align: center;"><strong>Price</strong></td>
                         <td width=12 style="text-align: center;"><strong>Status</strong></td>
+                        <td width=12 style="text-align: center;"><strong>Table Requests</strong></td>
                         <td width=12 style="text-align: center;"><strong>Expected Pickup Time</strong></td>
                     </tr>
                     <% for(var i=0; i<orders.length; i++) { %>
@@ -63,6 +64,7 @@
                                         <button style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Decline</button>
                                     </form>
                                 </td>
+                                <td width=12 style="text-align: center;"><%= orders[i].description %></td>
                                 <td width=12 style="text-align: center;"><%= orders[i].expectedPickupTime %></td>
                             </tr>
                             <% } %>

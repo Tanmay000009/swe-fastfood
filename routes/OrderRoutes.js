@@ -37,6 +37,8 @@ router.get("/current-orders", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -84,6 +86,8 @@ router.get("/order-history", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -262,6 +266,8 @@ router.post("/", validate, async (req, res) => {
           orderStatus: order.orderStatus,
           totalPrice: order.orderTotal,
           status: order.orderStatus,
+          expectedPickupTime: order.expectedPickUpTime,
+          description: order.tableRequests,
           date: order.createdDate.toLocaleDateString(),
           time: order.createdDate.toLocaleTimeString(),
         };
@@ -366,6 +372,8 @@ router.post("/accept/:id", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -431,6 +439,8 @@ router.post("/accept/:id", validate, async (req, res) => {
           orderStatus: order.orderStatus,
           totalPrice: order.orderTotal,
           status: order.orderStatus,
+          expectedPickupTime: order.expectedPickUpTime,
+          description: order.tableRequests,
           date: order.createdDate.toLocaleDateString(),
           time: order.createdDate.toLocaleTimeString(),
         };
@@ -483,6 +493,8 @@ router.post("/cancel/:id", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -548,6 +560,8 @@ router.post("/cancel/:id", validate, async (req, res) => {
           orderStatus: order.orderStatus,
           totalPrice: order.orderTotal,
           status: order.orderStatus,
+          expectedPickupTime: order.expectedPickUpTime,
+          description: order.tableRequests,
           date: order.createdDate.toLocaleDateString(),
           time: order.createdDate.toLocaleTimeString(),
         };
@@ -599,6 +613,8 @@ router.post("/completed/:id", validate, async (req, res) => {
         orderStatus: order.orderStatus,
         totalPrice: order.orderTotal,
         status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
         date: order.createdDate.toLocaleDateString(),
         time: order.createdDate.toLocaleTimeString(),
       };
@@ -656,6 +672,8 @@ router.post("/completed/:id", validate, async (req, res) => {
           orderStatus: order.orderStatus,
           totalPrice: order.orderTotal,
           status: order.orderStatus,
+          expectedPickupTime: order.expectedPickUpTime,
+          description: order.tableRequests,
           date: order.createdDate.toLocaleDateString(),
           time: order.createdDate.toLocaleTimeString(),
         };

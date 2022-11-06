@@ -259,6 +259,8 @@ router.post("/login", async (req, res) => {
                   orderStatus: order.orderStatus,
                   totalPrice: order.orderTotal,
                   status: order.orderStatus,
+                  expectedPickupTime: order.expectedPickUpTime,
+                  description: order.tableRequests,
                   date: order.createdDate.toLocaleDateString(),
                   time: order.createdDate.toLocaleTimeString(),
                 };
