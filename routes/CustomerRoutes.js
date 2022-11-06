@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const Customer = require("../models/Customer");
 const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
+const Restaurant = require("../models/Restaurant");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
@@ -101,7 +102,10 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     console.log("Error in creating customer", err);
-    res.sendStatus(500);
+    res.render("signup.ejs", {
+      user: "Customer",
+      msg: "Error in creating customer! Please try again",
+    });
   }
 });
 
@@ -219,30 +223,38 @@ router.post("/login", async (req, res) => {
         msg: "Incorrect Username/Password",
       });
     } else {
-      bcrypt.compare(req.body.password, customer.password, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.render("login.ejs", {
-            user: "User",
-            msg: "Incorrect Username/Password",
-          });
-        } else if (result) {
-          console.log(result);
-          const info = {
-            userName: customer.userName,
-          };
-          const token = getToken(info, "2h");
-          req.session.token = token;
-          res.render("customer_home.ejs", { customer, token });
-        } else {
-          res.status(401).json({ msg: "Incorrect Username or Password" });
-          return;
+      bcrypt.compare(
+        req.body.password,
+        customer.password,
+        async (err, result) => {
+          if (err) {
+            console.log(err);
+            return res.render("login.ejs", {
+              user: "User",
+              msg: "Incorrect Username/Password",
+            });
+          } else if (result) {
+            console.log(result);
+            const info = {
+              userName: customer.userName,
+            };
+            const token = getToken(info, "2h");
+            req.session.token = token;
+            const restaurants = await Restaurant.find();
+            res.render("customer_home.ejs", { customer, token, restaurants });
+          } else {
+            res.status(401).json({ msg: "Incorrect Username or Password" });
+            return;
+          }
         }
-      });
+      );
     }
   } catch (err) {
     console.log("Error in logging in customer", err);
-    res.sendStatus(500);
+    res.render("login.ejs", {
+      user: "Customer",
+      msg: "Error in logging in customer! Please try again",
+    });
   }
 });
 

@@ -109,7 +109,10 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     console.log("Error in creating owner", err);
-    res.sendStatus(500);
+    res.render("signup.ejs", {
+      user: "Owner",
+      msg: "Error in creating owner! Please try again",
+    });
   }
 });
 
@@ -240,8 +243,11 @@ router.post("/login", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("Error in logging in customer", err);
-    res.sendStatus(500);
+    console.log("Error in logging in owner", err);
+    res.render("login.ejs", {
+      user: "Owner",
+      msg: "Error in owner in customer! Please try again",
+    });
   }
 });
 
