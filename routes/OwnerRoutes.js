@@ -26,7 +26,6 @@ router.get("/signup", (req, res) => {
 
 router.get("/new/restaurant", (req, res) => {
   const token = req.headers.authorization;
-  console.log(token);
   res.render("add_new_restaurant.ejs", { user: "Owner", msg: "", token });
 });
 
@@ -198,7 +197,6 @@ router.delete("/:ownerId", async (req, res) => {
 
 // Login a owner
 router.post("/login", async (req, res) => {
-  console.log(req.body);
   try {
     const owner = await Owner.findOne({ userName: req.body.userName });
 
@@ -215,7 +213,6 @@ router.post("/login", async (req, res) => {
             msg: "Incorrect Username/Password",
           });
         } else if (result) {
-          console.log(result);
           req.session.owner = owner;
           const info = {
             userName: owner.userName,

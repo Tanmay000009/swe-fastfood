@@ -47,6 +47,8 @@
                 </div>
                 <input type="hidden" name="restaurantId" value="<%= restaurant._id %>">
                 <% for (var i=0;i<menuItems.length;i++) {%>
+                    <% if (menuItems[i].available ) {%>
+                        
                     <tr>
                             <input type="hidden" name="<%- i + "name" %>" value="<%= menuItems[i].name %>">
                             <input type="hidden" name="<%- i + "price" %>" value="<%= menuItems[i].price %>">
@@ -69,6 +71,7 @@
                             <option value="10">10</option>
                           </select></td>
                         </tr>
+                        <% } %>
                         <% } %>
                         <tr>
                             <td width=150 "><strong>Total</strong></td>

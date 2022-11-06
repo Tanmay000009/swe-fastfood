@@ -12,7 +12,6 @@ router.get("/update-menu", validate, async (req, res) => {
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   const menuItems = await MenuItem.find({ restaurantId: restaurant._id });
-  console.log(menuItems);
   if (req.session.owner) {
     req.session.token = req.session.token;
     res.render("owner_update_menu.ejs", {
@@ -179,7 +178,6 @@ router.get("/", async (req, res) => {
 router.get("/:restaurantId", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const restaurantId = req.params.restaurantId;
-  console.log(restaurantId);
   const customer = await Customer.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ _id: restaurantId });
   const menuItems = await MenuItem.find({ restaurantId: restaurantId });
@@ -205,43 +203,9 @@ router.get("/:restaurantId", validate, async (req, res) => {
   }
 });
 
-// Get a specific restaurant with msg
-router.get("/:restaurantId/:msg", validate, async (req, res) => {
-  console.log("In get restaurant with msg");
-  const userName = req.decodedToken.userName;
-  const restaurantId = req.params.restaurantId;
-  const msg = req.params.msg;
-  console.log(restaurantId, msg);
-  const customer = await Customer.findOne({ userName: userName });
-  const restaurant = await Restaurant.findOne({ _id: restaurantId });
-  const menuItems = await MenuItem.find({ restaurantId: restaurantId });
-  const restaurants = await Restaurant.find();
-  req.session.token = req.session.token;
-  try {
-    if (req.session.token) {
-      res.render("restaurant.ejs", {
-        msg,
-        restaurant,
-        customer,
-        menuItems,
-      });
-    } else {
-      res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
-    }
-  } catch (err) {
-    res.render("customer_home.ejs", {
-      msg: "Restaurant not found!",
-      customer,
-      restaurants,
-    });
-  }
-});
-
 // Create a new restaurant
 router.post("/", validate, async (req, res) => {
   const ownerId = req.body.ownerId;
-  console.log(req.body);
-  console.log("ownerId", ownerId);
   // verify owner
   const owner = await Owner.findById(ownerId);
 
@@ -300,7 +264,6 @@ router.post("/", validate, async (req, res) => {
       ownerId,
       ownerName: owner.name,
     });
-    console.log("restaurant", restaurant);
     await restaurant.save();
     res.render("owner_home.ejs", {
       ownerId,

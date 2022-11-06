@@ -71,7 +71,14 @@
           <td width="15" style="text-align: center">
             <strong><%= menuItems[i-1].price %></strong>
           </td>
-          <td width="15" style="text-align: center"><strong>Action</strong></td>
+          <td width="15" style="text-align: center"><strong>
+            <form method="post" action="<%- "/menu/update/"  + menuItems[i-1]._id %>">
+              <button style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Edit</button>
+          </form>
+          <form style="padding-top: 6px;" method="post" action="<%- "/menu/delete/" + menuItems[i-1]._id  %>">
+              <button style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Delete</button>
+          </form>
+          </strong></td>
         </tr>
 
         <% } %>

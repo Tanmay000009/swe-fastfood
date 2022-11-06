@@ -59,12 +59,10 @@ router.get("/current-orders", validate, async (req, res) => {
 
 router.get("/order-history", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
-  console.log(userName);
   const customer = await Customer.findOne({ userName });
   const orders = await Order.find({
     customerId: customer._id,
   });
-  console.log("orders", orders);
   const orderMapped = await Promise.all(
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
@@ -222,7 +220,6 @@ router.post("/", validate, async (req, res) => {
         quantity: req.body[`${key}quantity`],
       };
     });
-    console.log("orderItemsTotal", orderItemsTotal);
     const orderTotal = orderItemsTotal.reduce((acc, item) => {
       return acc + Number(item.price) * Number(item.quantity);
     }, 0);
@@ -349,7 +346,6 @@ router.post("/accept/:id", validate, async (req, res) => {
   req.session.token = req.session.token;
   const owner = await Owner.findOne({ userName });
   const restaurant = await Restaurant.findOne({ userName });
-  console.log(restaurant);
   let orders = await Order.find({ restaurantId: restaurant._id });
   let orderMapped = await Promise.all(
     orders.map(async (order) => {
@@ -470,7 +466,6 @@ router.post("/cancel/:id", validate, async (req, res) => {
   req.session.token = req.session.token;
   const owner = await Owner.findOne({ userName });
   const restaurant = await Restaurant.findOne({ userName });
-  console.log(restaurant);
   let orders = await Order.find({ restaurantId: restaurant._id });
   let orderMapped = await Promise.all(
     orders.map(async (order) => {
@@ -590,7 +585,6 @@ router.post("/completed/:id", validate, async (req, res) => {
   req.session.token = req.session.token;
   const owner = await Owner.findOne({ userName });
   const restaurant = await Restaurant.findOne({ userName });
-  console.log(restaurant);
   let orders = await Order.find({ restaurantId: restaurant._id });
   let orderMapped = await Promise.all(
     orders.map(async (order) => {

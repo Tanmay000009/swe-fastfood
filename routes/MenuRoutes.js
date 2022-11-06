@@ -10,7 +10,7 @@ router.get("/add-new-item", validate, async (req, res) => {
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   req.session.token = req.session.token;
-  res.render("add_menu_item.ejs", { msg: "", restaurant, owner });
+  res.render("add_menu_item.ejs", { msg: "", restaurant, owner, menuItem: {} });
 });
 
 // Get all menuItems
@@ -69,8 +69,47 @@ router.post("/", validate, async (req, res) => {
   }
 });
 
+router.post("/update/:menuItemId", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  req.session.token = req.session.token;
+
+  try {
+    const menuItem = await MenuItem.findById(req.params.menuItemId);
+
+    if (menuItem) {
+      res.render("add_menu_item.ejs", {
+        msg: "",
+        restaurant,
+        owner,
+        menuItem,
+      });
+    }
+  } catch (err) {
+    const menuItems = await MenuItem.find({
+      restaurantId: restaurant._id,
+    });
+    console.log("Error in updating menuItem", err);
+    res.render("owner_update_menu.ejs", {
+      msg: "Error in updating menuItem",
+      restaurant,
+      owner,
+      menuItems,
+    });
+  }
+});
+
 // Update a menuItem item
-router.put("/:menuItemId", async (req, res) => {
+router.post("/:menuItemId", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  let menuItems = await MenuItem.find({
+    restaurantId: restaurant._id,
+  });
+  req.session.token = req.session.token;
+
   try {
     const menuItem = await MenuItem.findByIdAndUpdate(
       req.params.menuItemId,
@@ -79,21 +118,54 @@ router.put("/:menuItemId", async (req, res) => {
         new: true,
       }
     );
-    res.json(menuItem);
+    menuItems = await MenuItem.find({
+      restaurantId: restaurant._id,
+    });
+    res.render("owner_update_menu.ejs", {
+      msg: "Menu Item updated successfully!",
+      restaurant,
+      owner,
+      menuItems,
+    });
   } catch (err) {
     console.log("Error in updating menuItem", err);
-    res.sendStatus(500);
+    res.render("owner_update_menu.ejs", {
+      msg: "Error in updating menuItem",
+      restaurant,
+      owner,
+      menuItems,
+    });
   }
 });
 
 // Delete a menuItem item
-router.delete("/:menuItemId", async (req, res) => {
+router.post("/delete/:menuItemId", validate, async (req, res) => {
+  req.session.token = req.session.token;
+  const userName = req.decodedToken.userName;
+  const owner = await Owner.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  let menuItems = await MenuItem.find({
+    restaurantId: restaurant._id,
+  });
   try {
     await MenuItem.findByIdAndDelete(req.params.menuItemId);
-    res.sendStatus(200);
+    menuItems = await MenuItem.find({
+      restaurantId: restaurant._id,
+    });
+    res.render("owner_update_menu.ejs", {
+      msg: "Menu Item updated successfully!",
+      restaurant,
+      owner,
+      menuItems,
+    });
   } catch (err) {
     console.log("Error in deleting menuItem", err);
-    res.sendStatus(500);
+    res.render("owner_update_menu.ejs", {
+      msg: "Error in deleting menuItem",
+      restaurant,
+      owner,
+      menuItems,
+    });
   }
 });
 

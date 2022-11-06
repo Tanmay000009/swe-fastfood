@@ -7,7 +7,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" type="text/css" href="/css/grid.css" />
-    <title>Add Menu Item</title>
+    <% if (menuItem) {%>
+      <title>Update Menu Item</title>
+      <% } else {%>
+        <title>Add Menu Item</title>
+      <% } %>
+    
     <style>
       input,
       textarea {
@@ -75,10 +80,81 @@
     </section>
     <section class="section-plans" style="padding: 20px 0">
       <div class="row">
+        <% if (menuItem) {%>
+        <h2 style="color: #b61010">UPDATE MENU ITEM</h2>
+        <% } else {%>
         <h2 style="color: #b61010">ADD MENU ITEM</h2>
+        <% } %>
       </div>
     </section>
     <section class="section-plans menu-form">
+      <% if (menuItem) {%>
+      <form action="<%= "/menu/" + menuItem._id %>" method="post">
+        <label for="name">Name</label> <br />
+        <input
+          id="name"
+          type="text"
+          class="validate"
+          name="name"
+          value="<%= menuItem.name %>"
+          required
+        /><br />
+        <label for="description">Description</label><br />
+        <textarea
+          name="description"
+          id="description"
+          cols="20"
+          rows="8"
+          required
+        >
+<%= menuItem.description %></textarea
+        >
+        <br />
+        <label for="category">Category</label> <br />
+        <input
+          id="category"
+          type="text"
+          class="validate"
+          name="category"
+          value="<%= menuItem.category %>"
+          required
+        /><br />
+        <label for="price">Price</label> <br />
+        <input
+          id="price"
+          type="number"
+          class="validate"
+          name="price"
+          value="<%= menuItem.price %>"
+          required
+        />
+        <br />
+        <label for="image">Image</label> <br />
+        <input
+          id="image"
+          type="text"
+          class="validate"
+          name="image"
+          value="<%= menuItem.image %>"
+          required
+        />
+        <br />
+        <% if (menuItem.available) {%>
+          <label for="available">Available</label>
+        <input type="radio" name="available" value="true" style="margin-top: 0; margin-bottom: 0;" checked="checked" />
+        <label for="available">Unavailable</label>
+        <input type="radio" name="available" value="false" style="margin-top: 0; margin-bottom: 0;" />
+        <br />
+          <% } else {%>
+            <label for="available">Available</label>
+            <input type="radio" name="available" value="true" style="margin-top: 0; margin-bottom: 0;"  />
+            <label for="available">Unavailable</label>
+            <input type="radio" name="available" value="false" style="margin-top: 0; margin-bottom: 0;" checked="checked"/>
+            <br />
+            <% } %>
+        <button type="submit">Update Item</button>
+      </form>
+      <% } else { %>
       <form action="/menu" method="post">
         <label for="name">Name</label> <br />
         <input
@@ -117,8 +193,14 @@
         <label for="image">Image</label> <br />
         <input id="image" type="text" class="validate" name="image" required />
         <br />
+        <label for="available">Available</label>
+        <input type="radio" name="available" value="true" style="margin-top: 0; margin-bottom: 0;" checked="checked" />
+        <label for="available">Unavailable</label>
+        <input type="radio" name="available" value="false" style="margin-top: 0; margin-bottom: 0;" />
+        <br />
         <button type="submit">Add Item</button>
       </form>
+      <% } %>
     </section>
     <section class="section-plans">
       <div class="row" style="padding-top: 40px">
