@@ -99,17 +99,9 @@ router.get("/restaurant", validate, async (req, res) => {
 
 // Create a new order
 router.post("/", validate, async (req, res) => {
-  const { orderItems, restaurantId, customerId, orderStatus, orderTotal } =
-    req.body;
-  const userName = req.decodedToken.userName;
-  if (
-    !orderItems ||
-    !restaurantId ||
-    !customerId ||
-    !orderStatus ||
-    !orderTotal ||
-    !userName
-  ) {
+  const { orderItems, restaurantId, customerId, orderTotal } = req.body;
+  req.session.token = req.session.token;
+  if (!orderItems || !restaurantId || !customerId || !orderTotal) {
     res.status(400).json({ msg: "Please enter all fields" });
     return;
   }
@@ -124,25 +116,6 @@ router.post("/", validate, async (req, res) => {
     const user = await Customer.findById(customerId);
     if (!user) {
       res.status(400).json({ msg: "Customer does not exist" });
-      return;
-    }
-    // verify that the user is the user placing the order
-    if (user.userName !== userName) {
-      res.status(400).json({ msg: "Customer does not match" });
-      return;
-    }
-    // verify that the order items exist
-    const items = await MenuItem.find({ _id: { $in: orderItems } });
-    if (items.length !== orderItems.length) {
-      res.status(400).json({ msg: "One or more order items do not exist" });
-      return;
-    }
-    const orderTotalConfirm = orderItems.reduce((acc, item) => {
-      return acc + item.item.price * item.quantity;
-    }, 0);
-
-    if (orderTotalConfirm !== orderTotal) {
-      res.status(400).json({ msg: "Order total is not correct" });
       return;
     }
 

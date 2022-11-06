@@ -101,6 +101,38 @@ router.get("/:restaurantId", validate, async (req, res) => {
   }
 });
 
+// Get a specific restaurant with msg
+router.get("/:restaurantId/:msg", validate, async (req, res) => {
+  console.log("In get restaurant with msg");
+  const userName = req.decodedToken.userName;
+  const restaurantId = req.params.restaurantId;
+  const msg = req.params.msg;
+  console.log(restaurantId, msg);
+  const customer = await Customer.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ _id: restaurantId });
+  const menuItems = await MenuItem.find({ restaurantId: restaurantId });
+  const restaurants = await Restaurant.find();
+  req.session.token = req.session.token;
+  try {
+    if (req.session.token) {
+      res.render("restaurant.ejs", {
+        msg,
+        restaurant,
+        customer,
+        menuItems,
+      });
+    } else {
+      res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+    }
+  } catch (err) {
+    res.render("customer_home.ejs", {
+      msg: "Restaurant not found!",
+      customer,
+      restaurants,
+    });
+  }
+});
+
 // Create a new restaurant
 router.post("/", validate, async (req, res) => {
   const ownerId = req.body.ownerId;

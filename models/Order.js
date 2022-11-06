@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
     ref: "Restaurant",
     required: true,
   },
-  userId: {
+  customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,

@@ -8,6 +8,11 @@
         <title><%= restaurant.restaurantName %></title>
     </head>
     <body>
+        <% if (msg) { %>
+            <script>
+              alert("<%= msg %>");
+            </script>
+            <% } %>
         <section class="section-plans">
             <div class="row">
                 <div class="col span-10-of-12">
@@ -38,10 +43,14 @@
                         <td width=15><strong>Quantity</strong></td>
                     </tr>
                 </div>
+                <% for (var i=0;i<menuItems.length;i++) {%>
                     <tr>
-                        <td width=150>Sample Item 1</td>
-                        <td width=15>Rs. 100</td>
-                        <td width=15><select name="quantity" id="quantity">
+                            
+                        <td id="<%- i + "name" %>" width=150><%= menuItems[i].name %></td>
+                        <td id="<%- i + "price" %>" width=15><%= menuItems[i].price %></td>
+                        <td id="<%- i + "id" %>" style="display: none;" >
+                            <%= menuItems[i]._id %></td>
+                        <td  width=15><select name="quantity" id="<%- i + "quantity" %>" class="quantity">
                             <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -54,7 +63,14 @@
                             <option value="9">9</option>
                             <option value="10">10</option>
                           </select></td>
-                    </tr>
+                        </tr>
+                        <% } %>
+                        <tr>
+                            <td width=150><strong>Total</strong></td>
+                            <td width=15><strong id="total">0</strong></td>
+                            <td width=15><strong></strong></td>
+                            
+                        </tr>
                     
                     
                 </table>
@@ -66,7 +82,7 @@
                     </div>
                 </a>
                 <div class="col" style="padding-bottom: 200px;"></div>
-                <a style="text-decoration: none;" href="ordered.html">
+                <a style="text-decoration: none;" onclick="">
                     <div class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010; color: white; font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;" type="submit" id="Submit" name="Submit" for="sjt">
                         Place Order
                     </div>
@@ -77,5 +93,71 @@
             </div>
         </section>
    </body>
+   <script>
+        $(document).ready(function(){
+
+            const menuItems = <%- JSON.stringify(menuItems) %>;
+            const restaurant = <%- JSON.stringify(restaurant) %>
+            const customer = <%- JSON.stringify(customer) %>
+            var total = 0;
+            var price = 0;
+            var quantity = 0;
+            
+
+            
+
+            $(".quantity").change(function(){
+                total = 0;
+                for (var i=0;i<menuItems.length;i++) {
+                    price = parseInt($("#" + i + "price").text());
+                    quantity = parseInt($("#" + i + "quantity").val());
+                    total += price * quantity;
+                }
+                $("#total").text(total);
+            });
+                
+
+
+
+            $("#Submit").click(function(event){
+                // prevent default form submit
+                event.preventDefault();
+
+                var items = [];
+                var total = 0;
+                for (var i=0;i<menuItems.length;i++) {
+                    var quantity = document.getElementById(i + "quantity").value;
+                    if (quantity != 0) {
+                        // make id string
+                        var id = (document.getElementById(i + "id").innerHTML).toString();
+                        // remove spaces
+                        id = id.replace(/\s/g, '');
+                        items.push({item: id, quantity});
+                        total += quantity * document.getElementById(i + "price").innerHTML;
+                    }
+                }
+                var order = {
+                    orderItems: items,
+                    restaurantId : restaurant._id,
+                    customerId: customer._id,
+                    orderTotal: total
+                }
+                if (items.length == 0) {
+                    alert("Please select at least one item");
+                }
+                else {
+                    $.post("/order", order, function(data, status){
+                        if (status == "success") {
+                            alert("Order placed successfully");
+                            window.location.href = "/customer/dashboard";
+                        }
+                        else {
+                            alert("Error placing order");
+                        }
+                    });
+                }
+            });
+        });
+   </script>
 </html>
    
