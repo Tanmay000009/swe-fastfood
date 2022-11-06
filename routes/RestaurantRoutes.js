@@ -173,6 +173,7 @@ router.get("/", async (req, res) => {
 router.get("/:restaurantId", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const restaurantId = req.params.restaurantId;
+  console.log(restaurantId);
   const customer = await Customer.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ _id: restaurantId });
   const menuItems = await MenuItem.find({ restaurantId: restaurantId });

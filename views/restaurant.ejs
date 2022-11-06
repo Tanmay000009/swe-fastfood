@@ -45,15 +45,16 @@
                         <td width=15><strong>Quantity</strong></td>
                     </tr>
                 </div>
+                <input type="hidden" name="restaurantId" value="<%= restaurant._id %>">
                 <% for (var i=0;i<menuItems.length;i++) {%>
-                    <input type="hidden" name="restaurantId" value="<%= restaurant._id %>">
                     <tr>
                             <input type="hidden" name="<%- i + "name" %>" value="<%= menuItems[i].name %>">
                             <input type="hidden" name="<%- i + "price" %>" value="<%= menuItems[i].price %>">
+                            <input type="hidden" name="<%- i + "id" %>" value="<%= menuItems[i]._id %>">
                         <td id="<%- i + "name" %>" name="<%- i + "name" %>" value="<%= menuItems[i].name %>" width=150><%= menuItems[i].name %></td>
                         <td id="<%- i + "price" %>" name="<%- i + "price" %>" value="<%= menuItems[i].price %>" width=15><%= menuItems[i].price %></td>
-                        <td id="<%- i + "id" %>" name="<%- i + "id" %>" style="display: none;" >
-                            <%= menuItems[i]._id %></td>
+                        
+                           
                         <td  width=15><select name="<%- i + "quantity" %>" id="<%- i + "quantity" %>" class="quantity">
                             <option value="0">0</option>
                             <option value="1">1</option>

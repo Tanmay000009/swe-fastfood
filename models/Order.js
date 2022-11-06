@@ -37,6 +37,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  tableRequests: {
+    type: String,
+    required: true,
+  },
   createdDate: {
     type: Date,
     required: true,

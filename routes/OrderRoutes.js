@@ -195,30 +195,84 @@ router.get("/restaurant", validate, async (req, res) => {
 
 // Create a new order
 router.post("/", validate, async (req, res) => {
-  const { orderItems, restaurantId, customerId, orderTotal } = req.body;
-  req.session.token = req.session.token;
-  if (!orderItems || !restaurantId || !customerId || !orderTotal) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
-  }
-  try {
-    // verify that the restaurant exists
-    const restaurant = await Restaurant.findById(restaurantId);
-    if (!restaurant) {
-      res.status(400).json({ msg: "Restaurant does not exist" });
-      return;
-    }
-    // verify that the user exists
-    const user = await Customer.findById(customerId);
-    if (!user) {
-      res.status(400).json({ msg: "Customer does not exist" });
-      return;
-    }
+  const { customerId, restaurantId, time, table } = req.body;
 
-    const order = new Order(req.body);
+  req.session.token = req.session.token;
+
+  try {
+    const nonZero = Object.keys(req.body).filter(
+      (key) => req.body[key] != 0 && key.includes("quantity")
+    );
+    const keys = nonZero.map((key) => key.replace("quantity", ""));
+
+    const orderItems = keys.map((key) => {
+      return {
+        item: req.body[`${key}id`],
+        quantity: req.body[`${key}quantity`],
+      };
+    });
+
+    const orderItemsTotal = keys.map((key) => {
+      return {
+        price: req.body[`${key}price`],
+        quantity: req.body[`${key}quantity`],
+      };
+    });
+    console.log("orderItemsTotal", orderItemsTotal);
+    const orderTotal = orderItemsTotal.reduce((acc, item) => {
+      return acc + Number(item.price) * Number(item.quantity);
+    }, 0);
+
+    const order = new Order({
+      customerId,
+      orderItems,
+      restaurantId,
+      orderTotal,
+      expectedPickUpTime: time,
+      tableRequests: table,
+    });
 
     await order.save();
-    res.json(order);
+
+    const customer = await Customer.findById(customerId);
+
+    const orders = await Order.find({
+      customerId: customer._id,
+      status: "Pending",
+    });
+
+    const orderMapped = await Promise.all(
+      orders.map(async (order) => {
+        const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+          const menuItem = await MenuItem.findById(orderItem.item);
+          return {
+            menuItemName: menuItem.name,
+            quantity: orderItem.quantity,
+          };
+        });
+
+        const orderItems = await Promise.all(orderItemsMapped);
+        const restaurant = await Restaurant.findById(order.restaurantId);
+
+        return {
+          orderId: order._id,
+          orderItems,
+          canteenName: restaurant.restaurantName,
+          restaurantAddress: restaurant.restaurantAddress,
+          orderStatus: order.orderStatus,
+          totalPrice: order.orderTotal,
+          status: order.orderStatus,
+          date: order.createdDate.toLocaleDateString(),
+          time: order.createdDate.toLocaleTimeString(),
+        };
+      })
+    );
+
+    res.render("customer_current_order.ejs", {
+      msg: "",
+      customer,
+      orders: orderMapped,
+    });
   } catch (err) {
     console.log("Error in creating order", err);
     res.sendStatus(500);
@@ -235,7 +289,7 @@ router.post("/confirm", validate, async (req, res) => {
   const keys = nonZero.map((key) => key.replace("quantity", ""));
   const orderItems = keys.map((key) => {
     return {
-      menuItemId: key,
+      menuItemId: req.body[`${key}id`],
       quantity: req.body[`${key}quantity`],
       name: req.body[`${key}name`],
       price: req.body[`${key}price`],
@@ -246,7 +300,6 @@ router.post("/confirm", validate, async (req, res) => {
     return acc + item.price * item.quantity;
   }, 0);
 
-  console.log(orderTotal);
   req.session.token = req.session.token;
 
   const customer = await Customer.findOne({ userName: userName });
@@ -258,6 +311,7 @@ router.post("/confirm", validate, async (req, res) => {
       orderItems,
       orderTotal,
       restaurantId,
+      customerId: customer._id,
     });
   } catch (err) {
     res.render("restaurant.ejs", {

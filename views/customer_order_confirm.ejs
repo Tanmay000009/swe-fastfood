@@ -22,35 +22,57 @@
                 <h2>YOUR CART</h2>
             </div>
             <div class="row">
-                <form method="post" id="sjt" name="sjt" action="">
+                <form method="post" action="/order">
                 
                 <table style="font-family: 'Lato','Arial', sans-serif;">
                     <div class="section-plans"></div>
                     <tr>
                         <td width="140"><strong>Item</strong></td>
                         <td width="20"><strong>Quantity</strong></td>
+                        <td width="20"><strong>Price</strong></td>
                         <td width="20"><strong>Total Price</strong></td>
-                        <td width="10"><strong>Time</strong></td>
+                        
                     </tr>
                 </div>
+                <input type="hidden" name="restaurantId" value="<%= restaurantId %>" />
+                <input type="hidden" name="customerId" value="<%= customerId %>" />
+                    <% for (var i = 0; i < orderItems.length; i++) { %>
                     <tr>
-                        <td width=150>Order 1</td>
-                        <td width=15>2</td>
-                        <td width=15>Rs. 200</td>
-                        <td width="15"><input type="time" id="time"></td>
+                        <input type="hidden" name="<%= i + "id" %>" value="<%= orderItems[i].menuItemId %>" />
+                        <input type="hidden" name="<%- i + "name" %>" value="<%= orderItems[i].name %>">
+                        <input type="hidden" name="<%- i + "price" %>" value="<%= orderItems[i].price %>">
+                        <input type="hidden" name="<%- i + "quantity" %>" value="<%= orderItems[i].quantity %>">
+                        <td width=150  ><%= orderItems[i].name %></td>
+                        <td width=15 name="<%= i + "quantity" %>" value="<%= orderItems[i].quantity %>" ><%= orderItems[i].quantity %></td>
+                        <td width=15 name="<%=i + "price" %>" value="<%= orderItems[i].price %>" ><%= orderItems[i].price %></td>
+                        <td width=15><%= Number(orderItems[i].price) * Number(orderItems[i].quantity) %></td>
+                        
                     </tr>
-
+                    <% } %>
+                    
+                    <tr>
+                        <td width=15></td>
+                        <td width=150><strong>Total</strong></td>
+                        <td width="15"></td>
+                        <td width=15><strong><%= orderTotal %></strong></td>
+                    </tr>
+                    <tr>
+                        <td>Expected Pick Up Time</td>
+                        <td width="15"><input type="time" name="time" id="time" required></td>
+                        <td>Table Requests</td>
+                        <td width="15"><input type="text" name="table" id="table"></td>
+                    </tr>
                 </table>
                 
                 <div class="row" style="padding-top: 50px;">
-                <a style="text-decoration: none; color:#B61010;" href="user_home.html">
+                <a style="text-decoration: none; color:#B61010;" href="/restaurant/<%=restaurantId%>">
                     <div class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(72, 39, 10, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;">
                         Go Back
                     </div>
                 </a>
                 <div class="col" style="padding: 0 0 200px 50px;"></div>
                 
-                    <buttn onclick=orderconfirm() class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010; color: white; font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;" id="Submit" name="Submit" for="sjt">
+                    <button type="submit" class="col span-5-of-11" style="box-shadow: 4px 4px 10px rgba(12, 10, 72, 0.15); text-align: center; padding: 1%;border: 2px solid #B61010;background-color: #B61010; color: white; font-family: 'Lato','Arial', sans-serif;font-weight: 300;font-size: 20px;">
                         Confirm Order
                     </button>
                 
@@ -59,11 +81,5 @@
                 </form>
             </div>
         </section>
-        <script>
-            function orderconfirm()
-            {
-                alert("Your order has been placed.");
-            }
-        </script>
     </body>
 </html>
