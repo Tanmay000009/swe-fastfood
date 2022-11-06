@@ -1,4 +1,5 @@
 const express = require("express");
+const MenuItem = require("../models/MenuItem");
 const Owner = require("../models/Owner");
 const Restaurant = require("../models/Restaurant");
 const validate = require("../utils/validate");
@@ -8,9 +9,16 @@ router.get("/update-menu", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  const menuItems = await MenuItem.find({ restaurantId: restaurant._id });
+  console.log(menuItems);
   if (req.session.owner) {
     req.session.token = req.session.token;
-    res.render("owner_update_menu.ejs", { msg: "", owner, restaurant });
+    res.render("owner_update_menu.ejs", {
+      msg: "",
+      owner,
+      restaurant,
+      menuItems,
+    });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
@@ -75,7 +83,7 @@ router.get("/:restaurantId", async (req, res) => {
 });
 
 // Create a new restaurant
-router.post("/", async (req, res) => {
+router.post("/", validate, async (req, res) => {
   const ownerId = req.body.ownerId;
   console.log(req.body);
   console.log("ownerId", ownerId);
@@ -89,6 +97,7 @@ router.post("/", async (req, res) => {
     });
   }
 
+  req.session.token = req.session.token;
   const {
     email,
     restaurantName,

@@ -60,6 +60,21 @@
           <td width="15" style="text-align: center"><strong>Price</strong></td>
           <td width="15" style="text-align: center"><strong>Action</strong></td>
         </tr>
+        <% for (var i=1;i<=menuItems.length;i++) {%>
+        <tr>
+          <td width="15" style="text-align: center">
+            <strong><%= i %></strong>
+          </td>
+          <td width="15" style="text-align: center">
+            <strong><%= menuItems[i-1].name %></strong>
+          </td>
+          <td width="15" style="text-align: center">
+            <strong><%= menuItems[i-1].price %></strong>
+          </td>
+          <td width="15" style="text-align: center"><strong>Action</strong></td>
+        </tr>
+
+        <% } %>
 
         <!-- In Actions, we can write Delete and Price change -->
       </table>

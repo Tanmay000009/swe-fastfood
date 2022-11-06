@@ -44,18 +44,28 @@ router.post("/", validate, async (req, res) => {
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   req.body.restaurantId = restaurant._id;
-  console.log(req.body);
+  const menuItems = await MenuItem.find({
+    restaurantId: restaurant._id,
+  });
+  req.session.token = req.session.token;
   try {
     const menuItem = new MenuItem(req.body);
     await menuItem.save();
+    menuItems.push(menuItem);
     res.render("owner_update_menu.ejs", {
       msg: "Menu Item added successfully!",
       restaurant,
       owner,
+      menuItems,
     });
   } catch (err) {
     console.log("Error in creating menuItem", err);
-    res.sendStatus(500);
+    res.render("owner_update_menu.ejs", {
+      msg: "Menu Item added successfully!",
+      restaurant,
+      owner,
+      menuItems,
+    });
   }
 });
 

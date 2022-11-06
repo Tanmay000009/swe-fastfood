@@ -30,7 +30,6 @@ app.use("/menu", require("./routes/MenuRoutes"));
 app.use("/customer", require("./routes/CustomerRoutes"));
 app.use("/owner", require("./routes/OwnerRoutes"));
 app.use("/order", require("./routes/OrderRoutes"));
-app.use("/menuitem", require("./routes/MenuItemRoutes"));
 
 app.get("/", (req, res) => {
   res.render("index.ejs", { msg: "" });
