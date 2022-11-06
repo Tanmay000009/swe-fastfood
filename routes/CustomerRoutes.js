@@ -285,7 +285,12 @@ router.post("/login", async (req, res) => {
             const token = getToken(info, "2h");
             req.session.token = token;
             const restaurants = await Restaurant.find();
-            res.render("customer_home.ejs", { customer, token, restaurants });
+            res.render("customer_home.ejs", {
+              msg: "",
+              customer,
+              token,
+              restaurants,
+            });
           } else {
             res.status(401).json({ msg: "Incorrect Username or Password" });
             return;

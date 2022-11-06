@@ -1,4 +1,5 @@
 const express = require("express");
+const Customer = require("../models/Customer");
 const MenuItem = require("../models/MenuItem");
 const Owner = require("../models/Owner");
 const Restaurant = require("../models/Restaurant");
@@ -73,12 +74,30 @@ router.get("/", async (req, res) => {
 
 // Get a specific restaurant
 router.get("/:restaurantId", async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const restaurantId = req.params.restaurantId;
+  const customer = await Customer.findOne({ userName: userName });
+  const restaurant = await Restaurant.findOne({ _id: restaurantId });
+  const menuItems = await MenuItem.find({ restaurantId: restaurantId });
+  const restaurants = await Restaurant.find();
+  req.session.token = req.session.token;
   try {
-    const restaurant = await Restaurant.findById(req.params.restaurantId);
-    res.json(restaurant);
+    if (req.session.token) {
+      res.render("restaurant.ejs", {
+        msg: "",
+        restaurant,
+        customer,
+        menuItems,
+      });
+    } else {
+      res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+    }
   } catch (err) {
-    console.log("Error in getting restaurant", err);
-    res.sendStatus(500);
+    res.render("customer_home.ejs", {
+      msg: "Restaurant not found!",
+      customer,
+      restaurants,
+    });
   }
 });
 
