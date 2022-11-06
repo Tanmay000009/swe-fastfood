@@ -41,6 +41,8 @@
                         <td width=15 style="text-align: center;"><strong>Feedback</strong></td>
                     </tr>
                     <% for(var i=0; i<orders.length; i++) { %>
+                        <% if (orders[i].status == "Accepted" || orders[i].status == "Pending") {%>
+                            <% } else {%>
                     <tr>
                         <td width=15 style="text-align: center;"><%= orders[i].order_id %></td>
                         <td width=12 style="text-align: center;">
@@ -52,6 +54,7 @@
                         <td width=15 style="text-align: center;"><%= orders[i].status %></td>
                         <td width=15 style="text-align: center;"><%= orders[i].feedback %></td>
                     </tr>
+                    <% } %>
                     <% } %>
                     
                 </table>

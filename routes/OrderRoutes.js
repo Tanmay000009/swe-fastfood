@@ -472,6 +472,114 @@ router.post("/cancel/:id", validate, async (req, res) => {
   }
 });
 
+router.post("/completed/:id", validate, async (req, res) => {
+  const { id } = req.params;
+  const userName = req.decodedToken.userName;
+  req.session.token = req.session.token;
+  const owner = await Owner.findOne({ userName });
+  const restaurant = await Restaurant.findOne({ userName });
+  console.log(restaurant);
+  let orders = await Order.find({ restaurantId: restaurant._id });
+  let orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      res.render("owner_current_orders.ejs", {
+        msg: "Order does not exist",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
+    }
+
+    if (order.orderStatus === "Completed") {
+      res.render("owner_current_orders.ejs", {
+        msg: "Order is already completed",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
+    }
+    if (order.orderStatus === "Cancelled") {
+      res.render("owner_current_orders.ejs", {
+        msg: "Order is already cancelled",
+        owner,
+        restaurant,
+        orders: orderMapped,
+      });
+    }
+    const orderUpdated = await Order.findByIdAndUpdate(id, {
+      orderStatus: "Completed",
+    });
+    orders = await Order.find({ restaurantId: restaurant._id });
+    orderMapped = await Promise.all(
+      orders.map(async (order) => {
+        const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+          const menuItem = await MenuItem.findById(orderItem.item);
+          return {
+            menuItemName: menuItem.name,
+            quantity: orderItem.quantity,
+          };
+        });
+
+        const orderItems = await Promise.all(orderItemsMapped);
+        const restaurant = await Restaurant.findById(order.restaurantId);
+
+        return {
+          orderId: order._id,
+          orderItems,
+          canteenName: restaurant.restaurantName,
+          restaurantAddress: restaurant.restaurantAddress,
+          orderStatus: order.orderStatus,
+          totalPrice: order.orderTotal,
+          status: order.orderStatus,
+          date: order.createdDate.toLocaleDateString(),
+          time: order.createdDate.toLocaleTimeString(),
+        };
+      })
+    );
+    res.render("owner_current_orders.ejs", {
+      msg: "Order marked as completed",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
+  } catch (err) {
+    console.log("Error in updating order", err);
+    res.render("owner_current_orders.ejs", {
+      msg: "Error in updating order",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
+  }
+});
+
 // complete a specific order
 router.put("/:id", validate, async (req, res) => {
   const { id } = req.params;

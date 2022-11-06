@@ -74,9 +74,41 @@ router.get("/completed-orders", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  const orders = await Order.find({ restaurantId: restaurant._id });
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
   if (req.session.owner) {
     req.session.token = req.session.token;
-    res.render("owner_completed_orders.ejs", { msg: "", owner, restaurant });
+    res.render("owner_completed_orders.ejs", {
+      msg: "",
+      owner,
+      restaurant,
+      orders: orderMapped,
+    });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }
@@ -86,9 +118,41 @@ router.get("/dashboard", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  const orders = await Order.find({ restaurantId: restaurant._id });
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
   if (req.session.owner) {
     req.session.token = req.session.token;
-    res.render("owner_home.ejs", { msg: "", restaurant, owner });
+    res.render("owner_home.ejs", {
+      msg: "",
+      restaurant,
+      owner,
+      orders: orderMapped,
+    });
   } else {
     res.render("login.ejs", { user: "Owner", msg: "Login expired!" });
   }

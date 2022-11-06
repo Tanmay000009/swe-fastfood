@@ -7,6 +7,11 @@
         <title>Current Order</title>
     </head>
     <body>
+        <% if (msg) { %>
+            <script>
+              alert("<%= msg %>");
+            </script>
+            <% } %>
         <section class="section-plans">
             <div class="row">
                 <div class="col span-10-of-12">
@@ -37,7 +42,8 @@
                         <td width=12 style="text-align: center;"><strong>Order Number</strong></td>
                         <td width=12 style="text-align: center;"><strong>Order</strong></td>
                         <td width=12 style="text-align: center;"><strong>Price</strong></td>
-                        <td width=12 style="text-align: center;"><strong>Status</strong></td>
+                        <td width=12 style="text-align: center;"><strong>Current Status</strong></td>
+                        <td width=12 style="text-align: center;"><strong>Update Status</strong></td>
                         <td width=12 style="text-align: center;"><strong>Expected Pickup Time</strong></td>
                     </tr>
                     <% for (var i = 0; i < orders.length; i++) { %>
@@ -51,6 +57,13 @@
                         </td>
                         <td width=12 style="text-align: center;"><%= orders[i].totalPrice %></td>
                         <td width=12 style="text-align: center;"><%= orders[i].status %></td>
+                        
+
+                        <td width="12" style="text-align: center;">
+                            <form style="padding-top: 6px; cursor: pointer;" method="post" action="<%- "/order/completed/" + orders[i].orderId %>">
+                                <button style="cursor: pointer; background-color: #B61010; padding: 10px 20px; color: white; border: none;">Completed</button>
+                            </form>
+                        </td>
                         <td width=12 style="text-align: center;"><%= orders[i].expected_pickup_time %></td>
                     </tr>
                     <% } %>

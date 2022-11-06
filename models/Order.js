@@ -33,6 +33,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  expectedPickUpTime: {
+    type: String,
+    required: true,
+  },
   createdDate: {
     type: Date,
     required: true,
