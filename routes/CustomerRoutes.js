@@ -6,6 +6,50 @@ const validate = require("../utils/validate");
 const Restaurant = require("../models/Restaurant");
 const router = express.Router();
 
+router.get("/order-history", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  if (req.session.token) {
+    req.session.token = req.session.token;
+    res.render("customer_completed_orders.ejs", {
+      msg: "",
+      customer,
+    });
+  } else {
+    res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+  }
+});
+
+router.get("/current-orders", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  if (req.session.token) {
+    req.session.token = req.session.token;
+    res.render("customer_current_order.ejs", {
+      msg: "",
+      customer,
+    });
+  } else {
+    res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+  }
+});
+
+router.get("/dashboard", validate, async (req, res) => {
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  const restaurants = await Restaurant.find();
+  if (req.session.token) {
+    req.session.token = req.session.token;
+    res.render("customer_home.ejs", {
+      msg: "",
+      customer,
+      restaurants,
+    });
+  } else {
+    res.render("login.ejs", { user: "Customer", msg: "Login expired!" });
+  }
+});
+
 router.get("/login", (req, res) => {
   if (req.session.user) {
     res.redirect("/customer");
