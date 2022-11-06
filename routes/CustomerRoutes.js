@@ -5,7 +5,110 @@ const getToken = require("../utils/getToken");
 const validate = require("../utils/validate");
 const Restaurant = require("../models/Restaurant");
 const Feedback = require("../models/Feedback");
+const Order = require("../models/Order");
+const MenuItem = require("../models/MenuItem");
 const router = express.Router();
+
+router.post("/order/cancel", validate, async (req, res) => {
+  const { id } = req.body;
+  const userName = req.decodedToken.userName;
+  const customer = await Customer.findOne({ userName: userName });
+  const order = await Order.findById(id);
+  let orders = await Order.find({
+    customerId: customer._id,
+    status: "Pending",
+  });
+
+  let orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
+  req.session.token = req.session.token;
+  try {
+    // check 2 mins
+    const timeDiff = Math.abs(Date.now() - order.createdDate);
+    const diffMins = Math.ceil(timeDiff / (1000 * 60));
+    if (diffMins > 2) {
+      return res.render("customer_current_order.ejs", {
+        msg: "You can only cancel an order within 2 mins of placing it",
+        customer,
+        orders: orderMapped,
+      });
+    } else {
+      order.orderStatus = "Cancelled";
+      order.save();
+      orders = await Order.find({
+        customerId: customer._id,
+        status: "Pending",
+      });
+
+      orderMapped = await Promise.all(
+        orders.map(async (order) => {
+          const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+            const menuItem = await MenuItem.findById(orderItem.item);
+            return {
+              menuItemName: menuItem.name,
+              quantity: orderItem.quantity,
+            };
+          });
+
+          const orderItems = await Promise.all(orderItemsMapped);
+          const restaurant = await Restaurant.findById(order.restaurantId);
+
+          return {
+            orderId: order._id,
+            orderItems,
+            canteenName: restaurant.restaurantName,
+            restaurantAddress: restaurant.restaurantAddress,
+            orderStatus: order.orderStatus,
+            totalPrice: order.orderTotal,
+            status: order.orderStatus,
+            expectedPickupTime: order.expectedPickUpTime,
+            description: order.tableRequests,
+            date: order.createdDate.toLocaleDateString(),
+            time: order.createdDate.toLocaleTimeString(),
+          };
+        })
+      );
+      return res.render("customer_current_order.ejs", {
+        msg: "Order cancelled successfully",
+        customer,
+        orders: orderMapped,
+      });
+    }
+  } catch (err) {
+    console.log("Error in cancelling order", err);
+    return res.render("customer_current_order.ejs", {
+      msg: "Error in cancelling order",
+      customer,
+      orders: orderMapped,
+    });
+  }
+});
 
 router.get("/feedback", validate, async (req, res) => {
   const userName = req.decodedToken.userName;

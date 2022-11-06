@@ -198,7 +198,6 @@ router.get("/restaurant", validate, async (req, res) => {
 // Create a new order
 router.post("/", validate, async (req, res) => {
   const { customerId, restaurantId, time, table } = req.body;
-
   req.session.token = req.session.token;
 
   try {
@@ -230,7 +229,7 @@ router.post("/", validate, async (req, res) => {
       restaurantId,
       orderTotal,
       expectedPickUpTime: time,
-      tableRequests: table,
+      tableRequests: table == "" ? "No table requests" : table,
     });
 
     await order.save();

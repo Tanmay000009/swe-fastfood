@@ -11,6 +11,11 @@
     <title>Current Orders</title>
   </head>
   <body>
+    <% if (msg) { %>
+      <script>
+        alert("<%= msg %>");
+      </script>
+      <% } %>
     <section class="section-cant">
       <div class="row">
         <div class="col span-10-of-12">
@@ -65,6 +70,9 @@
               <strong>Status</strong>
             </td>
             <td width="15" style="text-align: center">
+              <strong>Cancel Order</strong>
+            </td>
+            <td width="15" style="text-align: center">
               <strong>Order Date</strong>
             </td>
             <td width="15" style="text-align: center">
@@ -96,6 +104,12 @@
                     <%= orders[i].status %>
                   </td>
                   <% } %>
+                  <td width="12" style="text-align: center;">
+                    <form style="padding-top: 6px;" method="post" action="/customer/order/cancel/" >
+                      <input type="hidden" name="id" value="<%= orders[i].orderId %>" >
+                      <button type="submit" style="background-color: #B61010; padding: 10px 20px; color: white; border: none;">Cancel Order</button>
+                    </form>
+                </td>
               <td width="15" style="text-align: center">
                 <%= orders[i].date %>
                 </td>
