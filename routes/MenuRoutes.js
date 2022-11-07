@@ -10,7 +10,12 @@ router.get("/add-new-item", validate, async (req, res) => {
   const owner = await Owner.findOne({ userName: userName });
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   req.session.token = req.session.token;
-  res.render("add_menu_item.ejs", { msg: "", restaurant, owner, menuItem: {} });
+  res.render("add_menu_item.ejs", {
+    msg: "",
+    restaurant,
+    owner,
+    menuItem: null,
+  });
 });
 
 // Get all menuItems
