@@ -262,7 +262,7 @@ router.post("/", validate, async (req, res) => {
     await restaurant.save();
     res.render("owner_home.ejs", {
       ownerId,
-      restaurant: existingRestaurant,
+      restaurant,
       msg: "Restaurant already exists",
       orders: [],
       owner,
