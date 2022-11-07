@@ -23,10 +23,13 @@ router.post("/order/cancel", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -70,10 +73,13 @@ router.post("/order/cancel", validate, async (req, res) => {
         orders.map(async (order) => {
           const orderItemsMapped = order.orderItems.map(async (orderItem) => {
             const menuItem = await MenuItem.findById(orderItem.item);
-            return {
-              menuItemName: menuItem.name,
-              quantity: orderItem.quantity,
-            };
+            if (menuItem) {
+              return {
+                name: menuItem.name,
+                price: menuItem.price,
+                quantity: orderItem.quantity,
+              };
+            }
           });
 
           const orderItems = await Promise.all(orderItemsMapped);
@@ -114,21 +120,23 @@ router.get("/feedback", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const customer = await Customer.findOne({ userName: userName });
   const restaurants = await Restaurant.find();
+  const menuItems = await MenuItem.find();
   console.log(restaurants);
   req.session.token = req.session.token;
-  res.render("feedback.ejs", { msg: "", customer, restaurants });
+  res.render("feedback.ejs", { msg: "", customer, restaurants, menuItems });
 });
 
 router.post("/feedback/submit", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   req.session.token = req.session.token;
   const customer = await Customer.findOne({ userName: userName });
-  const { comment, rating, restaurant } = req.body;
+  const { comment, rating, restaurant, menuItem } = req.body;
   const restaurantId = restaurant;
   const feedback = {
     comment,
     rating,
     restaurantId,
+    menuItem,
   };
 
   const restaurants = await Restaurant.find();

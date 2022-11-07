@@ -35,10 +35,13 @@ router.get("/current-orders", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -81,23 +84,21 @@ router.get("/completed-orders", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        if (!menuItem) {
-          return null;
-        } else {
+        if (menuItem) {
           return {
-            menuItemName: menuItem.name,
+            name: menuItem.name,
+            price: menuItem.price,
             quantity: orderItem.quantity,
           };
         }
       });
       const orderItems = await Promise.all(orderItemsMapped);
       const restaurant = await Restaurant.findById(order.restaurantId);
-      // filter out null values
-      const filteredOrderItems = orderItems.filter((item) => item !== null);
+      // filter out null values\
 
       return {
         orderId: order._id,
-        orderItems: filteredOrderItems,
+        orderItems,
         canteenName: restaurant.restaurantName,
         restaurantAddress: restaurant.restaurantAddress,
         orderStatus: order.orderStatus,
@@ -110,6 +111,9 @@ router.get("/completed-orders", validate, async (req, res) => {
       };
     })
   );
+
+  console.log("orderMapped", orderMapped);
+
   if (req.session.owner) {
     req.session.token = req.session.token;
     res.render("owner_completed_orders.ejs", {
@@ -132,10 +136,13 @@ router.get("/dashboard", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);

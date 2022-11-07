@@ -20,10 +20,13 @@ router.get("/current-orders", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -67,10 +70,13 @@ router.get("/order-history", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -245,15 +251,17 @@ router.post("/", validate, async (req, res) => {
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
-          return {
-            menuItemName: menuItem.name,
-            quantity: orderItem.quantity,
-          };
+          if (menuItem) {
+            return {
+              name: menuItem.name,
+              price: menuItem.price,
+              quantity: orderItem.quantity,
+            };
+          }
         });
 
         const orderItems = await Promise.all(orderItemsMapped);
         const restaurant = await Restaurant.findById(order.restaurantId);
-
         return {
           orderId: order._id,
           orderItems,
@@ -269,7 +277,7 @@ router.post("/", validate, async (req, res) => {
         };
       })
     );
-
+    console.log(orderMapped);
     res.render("customer_current_order.ejs", {
       msg: "",
       customer,
@@ -350,10 +358,13 @@ router.post("/accept/:id", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -417,10 +428,13 @@ router.post("/accept/:id", validate, async (req, res) => {
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
-          return {
-            menuItemName: menuItem.name,
-            quantity: orderItem.quantity,
-          };
+          if (menuItem) {
+            return {
+              name: menuItem.name,
+              price: menuItem.price,
+              quantity: orderItem.quantity,
+            };
+          }
         });
 
         const orderItems = await Promise.all(orderItemsMapped);
@@ -470,10 +484,13 @@ router.post("/cancel/:id", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -537,10 +554,13 @@ router.post("/cancel/:id", validate, async (req, res) => {
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
-          return {
-            menuItemName: menuItem.name,
-            quantity: orderItem.quantity,
-          };
+          if (menuItem) {
+            return {
+              name: menuItem.name,
+              price: menuItem.price,
+              quantity: orderItem.quantity,
+            };
+          }
         });
 
         const orderItems = await Promise.all(orderItemsMapped);
@@ -589,10 +609,13 @@ router.post("/completed/:id", validate, async (req, res) => {
     orders.map(async (order) => {
       const orderItemsMapped = order.orderItems.map(async (orderItem) => {
         const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
+        if (menuItem) {
+          return {
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: orderItem.quantity,
+          };
+        }
       });
 
       const orderItems = await Promise.all(orderItemsMapped);
@@ -648,10 +671,13 @@ router.post("/completed/:id", validate, async (req, res) => {
       orders.map(async (order) => {
         const orderItemsMapped = order.orderItems.map(async (orderItem) => {
           const menuItem = await MenuItem.findById(orderItem.item);
-          return {
-            menuItemName: menuItem.name,
-            quantity: orderItem.quantity,
-          };
+          if (menuItem) {
+            return {
+              name: menuItem.name,
+              price: menuItem.price,
+              quantity: orderItem.quantity,
+            };
+          }
         });
 
         const orderItems = await Promise.all(orderItemsMapped);

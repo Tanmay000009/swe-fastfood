@@ -68,6 +68,27 @@
           </select>
           <br />
           <label
+            for="canteen"
+            style="
+              font-family: 'Lato', 'Arial', sans-serif;
+              font-weight: 300;
+              font-size: 20px;
+              margin-left: 4vw;
+            "
+            >CHOOSE MENU ITEM</label
+          >
+          <select
+            name="menuItem"
+            id="menuItem"
+            style="margin: 2vw 4vw; width: 60vw"
+          >
+          <% for (var i=0;i<menuItems.length;i++) {%>
+            <option value="<%= menuItems[i]._id %>" ><%= menuItems[i].name %></option>
+        <% } %>
+
+          </select>
+          <br />
+          <label
             for="comment"
             style="
               font-family: 'Lato', 'Arial', sans-serif;

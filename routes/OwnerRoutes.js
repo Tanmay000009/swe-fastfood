@@ -236,11 +236,10 @@ router.post("/login", async (req, res) => {
                 const orderItemsMapped = order.orderItems.map(
                   async (orderItem) => {
                     const menuItem = await MenuItem.findById(orderItem.item);
-                    if (!menuItem) {
-                      return;
-                    } else {
+                    if (menuItem) {
                       return {
-                        menuItemName: menuItem.name,
+                        name: menuItem.name,
+                        price: menuItem.price,
                         quantity: orderItem.quantity,
                       };
                     }
