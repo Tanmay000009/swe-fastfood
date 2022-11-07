@@ -231,17 +231,55 @@ router.post("/", validate, async (req, res) => {
     !restaurantAddress ||
     !restaurantZip
   ) {
-    res.status(400).json({ msg: "Please enter all fields" });
-    return;
+    res.render("add_new_restaurant.ejs", {
+      ownerId,
+      msg: "Please enter all fields",
+    });
   }
   if (restaurantPhone.length < 10 || restaurantPhone.length > 10) {
-    res.status(400).json({ msg: "Phone number must be 10 characters" });
-    return;
+    res.render("add_new_restaurant.ejs", {
+      ownerId,
+      msg: "Phone number must be 10 characters",
+    });
   }
   if (restaurantZip.length !== 6) {
-    res.status(400).json({ msg: "Zip code must be 6 characters" });
-    return;
+    res.render("add_new_restaurant.ejs", {
+      ownerId,
+      msg: "Zip code must be 6 characters",
+    });
   }
+
+  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
+  const orders = await Order.find({ restaurantId: restaurant._id });
+  const orderMapped = await Promise.all(
+    orders.map(async (order) => {
+      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
+        const menuItem = await MenuItem.findById(orderItem.item);
+        return {
+          menuItemName: menuItem.name,
+          quantity: orderItem.quantity,
+        };
+      });
+
+      const orderItems = await Promise.all(orderItemsMapped);
+      const restaurant = await Restaurant.findById(order.restaurantId);
+
+      return {
+        orderId: order._id,
+        orderItems,
+        canteenName: restaurant.restaurantName,
+        restaurantAddress: restaurant.restaurantAddress,
+        orderStatus: order.orderStatus,
+        totalPrice: order.orderTotal,
+        status: order.orderStatus,
+        expectedPickupTime: order.expectedPickUpTime,
+        description: order.tableRequests,
+        date: order.createdDate.toLocaleDateString(),
+        time: order.createdDate.toLocaleTimeString(),
+      };
+    })
+  );
+
   // check for existing restaurant
   const existingRestaurant = await Restaurant.findOne({
     ownerId,
@@ -251,6 +289,9 @@ router.post("/", validate, async (req, res) => {
       ownerId,
       restaurant: existingRestaurant,
       msg: "Restaurant already exists",
+      orders: orderMapped,
+      owner,
+      restaurant,
     });
   }
 
@@ -267,12 +308,17 @@ router.post("/", validate, async (req, res) => {
     await restaurant.save();
     res.render("owner_home.ejs", {
       ownerId,
+      restaurant: existingRestaurant,
+      msg: "Restaurant already exists",
+      orders: orderMapped,
+      owner,
       restaurant,
-      msg: "Restaurant created successfully",
     });
   } catch (err) {
-    console.log("Error in creating restaurant", err);
-    res.sendStatus(500);
+    res.render("add_new_restaurant.ejs", {
+      ownerId,
+      msg: "Error in creating restaurant",
+    });
   }
 });
 
