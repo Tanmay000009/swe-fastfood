@@ -249,52 +249,6 @@ router.post("/", validate, async (req, res) => {
     });
   }
 
-  const restaurant = await Restaurant.findOne({ ownerId: owner._id });
-  const orders = await Order.find({ restaurantId: restaurant._id });
-  const orderMapped = await Promise.all(
-    orders.map(async (order) => {
-      const orderItemsMapped = order.orderItems.map(async (orderItem) => {
-        const menuItem = await MenuItem.findById(orderItem.item);
-        return {
-          menuItemName: menuItem.name,
-          quantity: orderItem.quantity,
-        };
-      });
-
-      const orderItems = await Promise.all(orderItemsMapped);
-      const restaurant = await Restaurant.findById(order.restaurantId);
-
-      return {
-        orderId: order._id,
-        orderItems,
-        canteenName: restaurant.restaurantName,
-        restaurantAddress: restaurant.restaurantAddress,
-        orderStatus: order.orderStatus,
-        totalPrice: order.orderTotal,
-        status: order.orderStatus,
-        expectedPickupTime: order.expectedPickUpTime,
-        description: order.tableRequests,
-        date: order.createdDate.toLocaleDateString(),
-        time: order.createdDate.toLocaleTimeString(),
-      };
-    })
-  );
-
-  // check for existing restaurant
-  const existingRestaurant = await Restaurant.findOne({
-    ownerId,
-  });
-  if (existingRestaurant) {
-    res.render("owner_home.ejs", {
-      ownerId,
-      restaurant: existingRestaurant,
-      msg: "Restaurant already exists",
-      orders: orderMapped,
-      owner,
-      restaurant,
-    });
-  }
-
   try {
     const restaurant = new Restaurant({
       email,
@@ -310,7 +264,7 @@ router.post("/", validate, async (req, res) => {
       ownerId,
       restaurant: existingRestaurant,
       msg: "Restaurant already exists",
-      orders: orderMapped,
+      orders: [],
       owner,
       restaurant,
     });
