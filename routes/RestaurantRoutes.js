@@ -269,6 +269,7 @@ router.post("/", validate, async (req, res) => {
       restaurant,
     });
   } catch (err) {
+    console.log("Error in creating restaurant", err);
     res.render("add_new_restaurant.ejs", {
       ownerId,
       msg: "Error in creating restaurant",
