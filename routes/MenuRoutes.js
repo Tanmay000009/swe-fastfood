@@ -158,7 +158,7 @@ router.post("/delete/:menuItemId", validate, async (req, res) => {
       restaurantId: restaurant._id,
     });
     res.render("owner_update_menu.ejs", {
-      msg: "Menu Item updated successfully!",
+      msg: "Menu Item deleted successfully!",
       restaurant,
       owner,
       menuItems,
