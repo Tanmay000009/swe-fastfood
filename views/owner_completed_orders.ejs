@@ -13,7 +13,7 @@
                     <img src="/images/person.png" style="border-radius: 20%; width: 5vw;">
                     <div style="display: inline-block; vertical-align: super">
 
-                        <%= restaurant.name %>
+                        <%= restaurant.restaurantName %>
                         
                         
                     </div>
@@ -38,21 +38,19 @@
                         <td width=15 style="text-align: center;"><strong>Order</strong></td>
                         <td width=15 style="text-align: center;"><strong>Price</strong></td>
                         <td width=15 style="text-align: center;"><strong>Status</strong></td>
-                        <td width=15 style="text-align: center;"><strong>Feedback</strong></td>
                     </tr>
                     <% for(var i=0; i<orders.length; i++) { %>
                         <% if (orders[i].status == "Accepted" || orders[i].status == "Pending") {%>
                             <% } else {%>
                     <tr>
-                        <td width=15 style="text-align: center;"><%= orders[i].order_id %></td>
+                        <td width=15 style="text-align: center;"><%= i+1 %></td>
                         <td width=12 style="text-align: center;">
                             <% for (var j=0;j<orders[i].orderItems.length;j++) {%>
                                 <%= orders[i].orderItems[j].menuItemName %> (x <%= orders[i].orderItems[j].quantity %> ),
                               <% } %>
                         </td>
-                        <td width=15 style="text-align: center;"><%= orders[i].price %></td>
+                        <td width=15 style="text-align: center;"><%= orders[i].totalPrice %></td>
                         <td width=15 style="text-align: center;"><%= orders[i].status %></td>
-                        <td width=15 style="text-align: center;"><%= orders[i].feedback %></td>
                     </tr>
                     <% } %>
                     <% } %>
