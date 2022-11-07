@@ -10,6 +10,7 @@ const router = express.Router();
 router.get("/update-menu", validate, async (req, res) => {
   const userName = req.decodedToken.userName;
   const owner = await Owner.findOne({ userName: userName });
+  console.log("owner", owner);
   const restaurant = await Restaurant.findOne({ ownerId: owner._id });
   const menuItems = await MenuItem.find({ restaurantId: restaurant._id });
   if (req.session.owner) {
